@@ -1,0 +1,20 @@
+{
+  "name": "tournax",
+  "private": true,
+  "version": "0.1.0",
+  "description": "TOURNAX: eFootball tournament website, admin panel and WhatsApp score bot",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @tournax/web",
+    "build": "npm run build -w @tournax/web",
+    "bot": "npm run dev -w @tournax/bot",
+    "test": "npm test -w @tournax/core",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@tournax/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pure tournament logic shared by the web app and the WhatsApp bot",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
