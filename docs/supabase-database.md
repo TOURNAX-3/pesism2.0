@@ -16,10 +16,12 @@ The `sb_secret_` key is **not** the database password.
 1. Supabase → **Project Settings → Database** → copy your **database password** (or reset it).
 2. `apps/backend/.env`:
    ```env
-   DATABASE_URL=jdbc:postgresql://postgres:your-db-password@db.xjnovjmixytuxopzzrhd.supabase.co:5432/postgres?sslmode=require
+   DATABASE_URL=jdbc:postgresql://db.xjnovjmixytuxopzzrhd.supabase.co:5432/postgres?sslmode=require
+   DATABASE_USER=postgres
+   DATABASE_PASSWORD=your-db-password
    ADMIN_API_KEY=dev-admin-change-me
    ```
-   Encode `@` in the password as `%40` inside the URL.
+   Keep the password out of `DATABASE_URL` (special characters like `@` break JDBC URLs).
 3. Start API (runs Flyway `V1`–`V5` on that database):
    ```bash
    cd apps/backend

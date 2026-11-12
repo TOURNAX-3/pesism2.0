@@ -2,8 +2,10 @@ spring:
   application:
     name: tournax-api
   datasource:
-    # Set DATABASE_URL in apps/backend/.env (local) or Railway variables (jdbc:postgresql://…)
+    # JDBC host only (no user/password in URL — @ in password breaks jdbc:…//user:pass@host).
     url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
   jpa:
     hibernate:
       # Flyway owns the schema — never use update/create here

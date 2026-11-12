@@ -1,5 +1,7 @@
 {
-  "DATABASE_URL": "jdbc:postgresql://postgres.xjnovjmixytuxopzzrhd:YOUR_URL_ENCODED_PASSWORD@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require",
+  "DATABASE_URL": "jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require",
+  "DATABASE_USER": "postgres.xjnovjmixytuxopzzrhd",
+  "DATABASE_PASSWORD": "REPLACE_WITH_SUPABASE_DATABASE_PASSWORD",
   "ADMIN_API_KEY": "REPLACE_WITH_SAME_VALUE_AS_VERCEL_ADMIN_API_KEY",
   "CORS_ORIGINS": "https://YOUR_APP.vercel.app",
   "JAVA_TOOL_OPTIONS": "-Djava.net.preferIPv4Stack=true"
