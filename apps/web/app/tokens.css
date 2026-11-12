@@ -20,7 +20,7 @@
   --color-tag: #830D5C;
   --mask-opaque: #000;
   --grad-brand: linear-gradient(100deg, var(--color-accent-2) 0%, var(--color-accent) 100%);
-  --font-display: "Oscine", "Helvetica Neue", Helvetica, Arial, sans-serif; --font-body: "Oscine", "Helvetica Neue", Helvetica, Arial, sans-serif; --font-outlier: var(--font-body);
+  --font-display: var(--font-sofia-sans), "Helvetica Neue", Helvetica, Arial, sans-serif; --font-body: var(--font-sofia-sans), "Helvetica Neue", Helvetica, Arial, sans-serif; --font-outlier: var(--font-body);
   --font-headline: var(--font-furore), "Arial Narrow", sans-serif;
   --radius-control: 10px; --radius-card: 20px; --radius-panel: 24px; --radius-pill: 999px; --rule-hair: 1px; --shadow-card: none;
   --tracking-display: -0.03em; --display-weight: 800; --tracking-headline: 0.01em;
