@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
-import { Onest, Geist } from 'next/font/google';
+import { Onest } from 'next/font/google';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const onest = Onest({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-onest' });
 const furore = localFont({
@@ -22,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn(onest.variable, furore.variable, "font-sans", geist.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn(onest.variable, furore.variable, "font-sans")} suppressHydrationWarning>
       <body>
         <Script id="js-gate" strategy="beforeInteractive">
           {"document.documentElement.classList.add('js')"}
