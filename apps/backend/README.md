@@ -19,7 +19,7 @@ Or from repo root: `npm run api`
 
 ## Database (Supabase)
 
-Set `SUPABASE_DB_PASSWORD` in `apps/backend/.env` (database password from Supabase dashboard, **not** `sb_secret_`).
+Set `DATABASE_URL`, `DATABASE_USER`, and `DATABASE_PASSWORD` in `apps/backend/.env` (host-only JDBC URL; password separate).
 
 See [docs/supabase-database.md](../../docs/supabase-database.md).
 
@@ -36,9 +36,7 @@ Then:
 1. **Variables → Raw Editor**: paste from [`railway.variables.example.json`](./railway.variables.example.json) and replace placeholders.
 2. Config files: [`railway.toml`](./railway.toml), [`railway.json`](./railway.json), [`Dockerfile`](./Dockerfile).
 
-Use either `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`, or set `DATABASE_URL` to a full JDBC string instead:
-
-`jdbc:postgresql://db.<ref>.supabase.co:5432/postgres?sslmode=require`
+Set **`DATABASE_URL`** (host only, no credentials), **`DATABASE_USER`** (`postgres.<ref>` on pooler), **`DATABASE_PASSWORD`**. See `railway.variables.example.json`.
 
 `PORT` is injected by Railway automatically.
 

@@ -2,10 +2,10 @@ spring:
   application:
     name: tournax-api
   datasource:
-    # Full JDBC URL overrides everything (Supabase: Settings → Database → URI, prefix with jdbc:)
-    url: ${DATABASE_URL:jdbc:postgresql://db.${SUPABASE_PROJECT_REF:xjnovjmixytuxopzzrhd}.supabase.co:5432/postgres?sslmode=require}
-    username: ${DATABASE_USER:postgres}
-    password: ${SUPABASE_DB_PASSWORD:${DATABASE_PASSWORD:}}
+    # JDBC host only (no user/password in URL — @ in password breaks jdbc:…//user:pass@host).
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
   jpa:
     hibernate:
       # Flyway owns the schema — never use update/create here
