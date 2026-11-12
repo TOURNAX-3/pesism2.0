@@ -23,6 +23,25 @@ Set `SUPABASE_DB_PASSWORD` in `apps/backend/.env` (database password from Supaba
 
 See [docs/supabase-database.md](../../docs/supabase-database.md).
 
+## Railway
+
+**If you see “No start command detected” / Railpack / npm workspace:** the service root is wrong. Railway is building the **monorepo root** as Node. Fix:
+
+1. Service → **Settings** → **Root Directory** → `apps/backend` → save and redeploy.
+2. **Builder** should use the **`Dockerfile`** here (`railway.toml` sets this). Do not deploy only the repo root.
+3. **Deploy → Start command**: leave **empty** so Docker `ENTRYPOINT` runs `java -jar /app/app.jar`. A custom command like `java -jar build/libs/*.jar` fails at runtime (no `build/` folder in the image) and prints the `java` help text.
+
+Then:
+
+1. **Variables → Raw Editor**: paste from [`railway.variables.example.json`](./railway.variables.example.json) and replace placeholders.
+2. Config files: [`railway.toml`](./railway.toml), [`railway.json`](./railway.json), [`Dockerfile`](./Dockerfile).
+
+Use either `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`, or set `DATABASE_URL` to a full JDBC string instead:
+
+`jdbc:postgresql://db.<ref>.supabase.co:5432/postgres?sslmode=require`
+
+`PORT` is injected by Railway automatically.
+
 Health: `GET http://localhost:8080/api/v1/health`
 
 ## Registration API

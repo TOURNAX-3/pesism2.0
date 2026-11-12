@@ -1,0 +1,8 @@
+# Fallback if you use Nixpacks instead of the Dockerfile (Java/Gradle).
+# Railway: set Root Directory to apps/backend — do not deploy the repo root (that triggers Node Railpack).
+
+[phases.build]
+cmds = ["./gradlew bootJar -x test --no-daemon"]
+
+[start]
+cmd = "java -jar build/libs/app.jar"

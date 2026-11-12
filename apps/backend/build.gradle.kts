@@ -34,6 +34,14 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.named<Jar>("jar") {
+    enabled = false
+}
+
+tasks.bootJar {
+    archiveFileName.set("app.jar")
+}
+
 tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
     val envFile = file(".env")
     if (envFile.exists()) {
