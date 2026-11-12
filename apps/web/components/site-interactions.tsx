@@ -343,9 +343,9 @@ export function SiteInteractions() {
     // ---------- Registration modal ----------
     const modal = $<HTMLElement>('#register');
     const dialog = modal ? $<HTMLElement>('.modal__dialog', modal) : null;
-    const form = modal ? $<HTMLFormElement>('form', modal) : null;
     const formView = modal ? $<HTMLElement>('[data-view="form"]', modal) : null;
     const successView = modal ? $<HTMLElement>('[data-view="success"]', modal) : null;
+    const form = formView ? $<HTMLFormElement>('form', formView) : null;
     const submitBtn = form ? $<HTMLButtonElement>('button[type="submit"]', form) : null;
     let modalOpen = false;
     let modalReturnFocus: HTMLElement | null = null;
@@ -390,7 +390,7 @@ export function SiteInteractions() {
       phone: 'Enter a valid WhatsApp number with at least 10 digits.',
       city: 'Enter your city.',
       efootball: 'Enter your eFootball username.',
-      platform: 'Choose your platform.',
+      photo: 'Add a profile photo.',
     };
     function setError(field: HTMLElement, msg: string) {
       field.classList.toggle('has-error', !!msg);
@@ -404,9 +404,17 @@ export function SiteInteractions() {
       $$<HTMLElement>('.field', form).forEach(field => {
         const inputs = $$<HTMLInputElement>('input', field);
         if (!inputs.length) return;
-        const ok = inputs[0].type === 'radio' ? inputs.some(i => i.checked) : inputs[0].checkValidity() && inputs[0].value.trim() !== '';
-        setError(field, ok ? '' : messages[inputs[0].name]);
-        if (!ok && !firstBad) firstBad = inputs[0];
+        const fileInput = inputs.find(i => i.type === 'file');
+        const input = fileInput ?? inputs[0];
+        const ok =
+          input.type === 'radio'
+            ? inputs.some(i => i.checked)
+            : input.type === 'file'
+              ? input.files != null && input.files.length > 0
+              : input.checkValidity() && input.value.trim() !== '';
+        const msgKey = input.name === 'photo' ? 'photo' : input.name;
+        setError(field, ok ? '' : messages[msgKey] ?? 'This field is required.');
+        if (!ok && !firstBad) firstBad = input;
       });
       if (firstBad) (firstBad as HTMLInputElement).focus();
       return !firstBad;
@@ -428,22 +436,70 @@ export function SiteInteractions() {
       const field = target.closest<HTMLElement>('.field');
       if (field && field.classList.contains('has-error')) {
         const inputs = $$<HTMLInputElement>('input', field);
-        const ok = inputs[0].type === 'radio' ? inputs.some(i => i.checked) : inputs[0].checkValidity() && inputs[0].value.trim() !== '';
+        const input = inputs[0];
+        const ok =
+          input.type === 'radio'
+            ? inputs.some(i => i.checked)
+            : input.type === 'file'
+              ? input.files != null && input.files.length > 0
+              : input.checkValidity() && input.value.trim() !== '';
         if (ok) setError(field, '');
       }
     };
-    const onFormSubmit = (e: Event) => {
+    const apiErrors: Record<string, string> = {
+      already_registered: 'You are already registered for this season.',
+      identity_conflict: 'These details match another account. Use the same email and WhatsApp as before, or contact an admin.',
+      registration_closed: 'Registration is closed.',
+      tournament_full: 'All slots are full.',
+      validation_error: 'Check the form and try again.',
+      upload_error: 'Could not upload your photo. Check the file or try again.',
+    };
+
+    const onFormSubmit = async (e: Event) => {
       e.preventDefault();
-      if (!validate() || !submitBtn || !formView || !successView) return;
+      if (!validate() || !submitBtn || !formView || !successView || !form) return;
       submitBtn.disabled = true;
       const label = $<HTMLElement>('.btn__label', submitBtn);
       if (label) label.textContent = 'Registering…';
-      submitTimer = setTimeout(() => {
+
+      const data = new FormData(form);
+      const photo = data.get('photo');
+      if (!(photo instanceof File) || photo.size === 0) {
+        const photoField = $<HTMLElement>('#f-photo')?.closest<HTMLElement>('.field');
+        if (photoField) setError(photoField, 'Add a profile photo.');
+        submitBtn.disabled = false;
+        if (label) label.textContent = 'Confirm registration';
+        return;
+      }
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          body: data,
+        });
+        const body = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
+        if (!res.ok) {
+          const msg =
+            body.message ??
+            (body.code ? apiErrors[body.code] : undefined) ??
+            'Registration failed. Try again.';
+          const targetField =
+            body.code === 'upload_error'
+              ? ($<HTMLElement>('#f-photo')?.closest<HTMLElement>('.field') ?? $<HTMLElement>('.field', form))
+              : $<HTMLElement>('.field', form);
+          if (targetField) setError(targetField, msg);
+          submitBtn.disabled = false;
+          if (label) label.textContent = 'Confirm registration';
+          return;
+        }
         formView.hidden = true;
         successView.hidden = false;
         $<HTMLElement>('h2', successView)?.focus({ preventScroll: true });
-      }, reduced ? 300 : 1400);
+      } catch {
+        submitBtn.disabled = false;
+        if (label) label.textContent = 'Confirm registration';
+      }
     };
+
     form?.addEventListener('input', onFormInput);
     form?.addEventListener('submit', onFormSubmit);
     const modalCloseBtn = modal ? $<HTMLButtonElement>('.modal__close', modal) : null;

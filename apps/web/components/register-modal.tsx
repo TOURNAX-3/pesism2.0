@@ -1,4 +1,5 @@
 import { Icon, UseIcon } from './icon';
+import { RegisterPhotoField } from './register-photo-field';
 
 export function RegisterModal() {
   return (
@@ -11,7 +12,7 @@ export function RegisterModal() {
         <div className="modal__view" data-view="form">
           <div className="modal__head">
             <h2 className="modal__title" id="modal-title">Join Season 3.</h2>
-            <p>Fill in your details. We&rsquo;ll confirm your slot on WhatsApp.</p>
+            <p>Fill in your details. Admin will confirm your slot after review.</p>
           </div>
           <form className="form" noValidate>
             <div className="field">
@@ -44,17 +45,17 @@ export function RegisterModal() {
               <input id="f-efb" name="efootball" type="text" required placeholder="Your in game name" />
               <span className="field__error" aria-live="polite"></span>
             </div>
-            <fieldset className="field field--full">
-              <legend>Preferred platform</legend>
-              <div className="choices">
-                <label className="choice"><input type="radio" name="platform" value="PlayStation" required /><span>PlayStation</span></label>
-                <label className="choice"><input type="radio" name="platform" value="Xbox" /><span>Xbox</span></label>
-                <label className="choice"><input type="radio" name="platform" value="PC" /><span>PC</span></label>
-              </div>
-              <span className="field__error" aria-live="polite"></span>
-            </fieldset>
+            <RegisterPhotoField />
+            <input
+              className="sr-only"
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
             <div className="form__foot field--full">
-              <p className="form__fine">Demo form. Nothing is sent anywhere yet (Supabase wiring lands in Phase 2).</p>
+              <p className="form__fine">One registration per person. Duplicate or bogus entries may be removed.</p>
               <button className="btn btn--primary" type="submit">
                 <span className="btn__label">Confirm registration</span>
               </button>

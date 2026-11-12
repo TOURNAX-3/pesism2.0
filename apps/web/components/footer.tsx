@@ -32,6 +32,7 @@ export function Footer() {
             <h3>Community</h3>
             <ul>
               <li><a href="/#players">Players</a></li>
+              <li><a href="/grievances">Grievances</a></li>
               <li><a href="mailto:hello@example.com">Contact</a></li>
             </ul>
           </nav>

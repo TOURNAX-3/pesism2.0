@@ -1,0 +1,30 @@
+package com.tournax.application.dto;
+
+public record MatchStatsInput(
+    Integer homePossessionPct,
+    Integer awayPossessionPct,
+    Integer homeShots,
+    Integer awayShots,
+    Integer homeShotsOnTarget,
+    Integer awayShotsOnTarget,
+    Integer homeFouls,
+    Integer awayFouls,
+    Integer homeOffsides,
+    Integer awayOffsides,
+    Integer homeCornerKicks,
+    Integer awayCornerKicks,
+    Integer homeFreeKicks,
+    Integer awayFreeKicks,
+    Integer homePasses,
+    Integer awayPasses,
+    Integer homeSuccessfulPasses,
+    Integer awaySuccessfulPasses,
+    Integer homeCrosses,
+    Integer awayCrosses,
+    Integer homeInterceptions,
+    Integer awayInterceptions,
+    Integer homeTackles,
+    Integer awayTackles,
+    Integer homeSaves,
+    Integer awaySaves
+) {}
