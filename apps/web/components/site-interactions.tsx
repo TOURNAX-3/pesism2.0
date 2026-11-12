@@ -75,11 +75,11 @@ export function SiteInteractions() {
 
     let locks = 0;
     function lockScroll() {
-      if (locks++ === 0) { document.documentElement.classList.add('is-locked'); lenis?.stop(); }
+      if (locks++ === 0) { document.body.classList.add('is-locked'); lenis?.stop(); }
     }
     function unlockScroll() {
       locks = Math.max(0, locks - 1);
-      if (locks === 0) { document.documentElement.classList.remove('is-locked'); lenis?.start(); }
+      if (locks === 0) { document.body.classList.remove('is-locked'); lenis?.start(); }
     }
 
     function scrollToHash(hash: string) {
