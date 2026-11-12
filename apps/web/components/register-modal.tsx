@@ -1,10 +1,24 @@
+import { fetchRegistrationWindow, registrationModalHint } from '@/lib/registration-window';
 import { Icon, UseIcon } from './icon';
 import { RegisterPhotoField } from './register-photo-field';
 import { Button } from './ui/button';
 
-export function RegisterModal() {
+export async function RegisterModal() {
+  const window = await fetchRegistrationWindow();
+  const hint = registrationModalHint(window);
+  const open = window?.open ?? false;
+
   return (
-    <div className="modal" id="register" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div
+      className="modal"
+      id="register"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      data-registration-open={open ? 'true' : 'false'}
+      data-registration-hint={hint}
+      hidden
+    >
       <div className="modal__dialog">
         <button className="modal__close" type="button" aria-label="Close registration">
           <UseIcon id="i-close" />
@@ -13,7 +27,7 @@ export function RegisterModal() {
         <div className="modal__view" data-view="form">
           <div className="modal__head">
             <h2 className="modal__title" id="modal-title">Join Season 3.</h2>
-            <p>Fill in your details. Admin will confirm your slot after review.</p>
+            <p>{hint}</p>
           </div>
           <form className="form" noValidate>
             <div className="field">
@@ -57,8 +71,8 @@ export function RegisterModal() {
             />
             <div className="form__foot field--full">
               <p className="form__fine">One registration per person. Duplicate or bogus entries may be removed.</p>
-              <Button className="btn btn--primary" type="submit">
-                <span className="btn__label">Confirm registration</span>
+              <Button className="btn btn--primary" type="submit" disabled={!open}>
+                <span className="btn__label">{open ? 'Confirm registration' : 'Registration not open yet'}</span>
               </Button>
             </div>
           </form>
