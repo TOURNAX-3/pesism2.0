@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { SplitHeading } from './split-heading';
+import { Button } from './ui/button';
 
 export function Cta() {
   return (
@@ -19,9 +20,9 @@ export function Cta() {
         <SplitHeading id="cta-title" lines={['Fight for', 'the crown.']} />
         <p className="lead" data-reveal>Good at talking? Prove it on the pitch. Represent your skills, climb the table and take the Season 3 title.</p>
         <div data-reveal>
-          <button className="btn btn--primary" type="button" data-open-register style={{ padding: '0 2.25rem' } as CSSProperties}>
+          <Button className="btn btn--primary" type="button" data-open-register style={{ padding: '0 2.25rem' } as CSSProperties}>
             Register for Season 3
-          </button>
+          </Button>
         </div>
         <p className="cta__small" data-reveal>Limited slots available. Secure your place before registration closes.</p>
       </div>

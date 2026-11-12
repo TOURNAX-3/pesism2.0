@@ -2,6 +2,9 @@ import { listRegistrations, type AdminRegistration } from '@/lib/tournax-api';
 import { AdminPlayerActions } from '@/components/admin-player-actions';
 import { AdminPlayerAvatar } from '@/components/admin-player-avatar';
 import { AdminApiStatus } from '@/components/admin-api-status';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,54 +29,58 @@ export default async function AdminPlayersPage() {
       {error ? (
         <AdminApiStatus error={error} />
       ) : !rows?.length ? (
-        <div className="admin-card">
-          <p className="admin-muted">No registrations yet.</p>
-        </div>
+        <Card>
+          <CardContent>
+            <p className="admin-muted">No registrations yet.</p>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Photo</th>
-                <th>Name</th>
-                <th>Gaming</th>
-                <th>eFootball</th>
-                <th>City</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th aria-label="Actions" />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.playerId}>
-                  <td>
-                    <AdminPlayerAvatar
-                      playerId={row.playerId}
-                      name={row.name}
-                      avatarUrl={row.avatarUrl ?? null}
-                    />
-                  </td>
-                  <td>{row.name}</td>
-                  <td>{row.gamingUsername}</td>
-                  <td>{row.efootballUsername ?? '—'}</td>
-                  <td>{row.city}</td>
-                  <td>{row.email}</td>
-                  <td className="admin-mono">{row.waNumber}</td>
-                  <td>
-                    <span className={row.approved ? 'admin-pill admin-pill--ok' : 'admin-pill admin-pill--wait'}>
-                      {row.approved ? 'Approved' : 'Pending'}
-                    </span>
-                  </td>
-                  <td className="admin-actions">
-                    <AdminPlayerActions playerId={row.playerId} approved={row.approved} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Card>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Photo</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Gaming</TableHead>
+                  <TableHead>eFootball</TableHead>
+                  <TableHead>City</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead aria-label="Actions" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow key={row.playerId}>
+                    <TableCell>
+                      <AdminPlayerAvatar
+                        playerId={row.playerId}
+                        name={row.name}
+                        avatarUrl={row.avatarUrl ?? null}
+                      />
+                    </TableCell>
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>{row.gamingUsername}</TableCell>
+                    <TableCell>{row.efootballUsername ?? '—'}</TableCell>
+                    <TableCell>{row.city}</TableCell>
+                    <TableCell>{row.email}</TableCell>
+                    <TableCell className="admin-mono">{row.waNumber}</TableCell>
+                    <TableCell>
+                      <Badge variant={row.approved ? 'default' : 'secondary'}>
+                        {row.approved ? 'Approved' : 'Pending'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <AdminPlayerActions playerId={row.playerId} approved={row.approved} name={row.name} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
     </>
   );

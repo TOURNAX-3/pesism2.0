@@ -182,7 +182,7 @@ ul{list-style:none;margin:0;padding:0}
 @media (min-width:1020px){.hero__swoosh{display:block;position:absolute;z-index:-1;left:0;bottom:0;width:min(42vw,36rem);height:auto;opacity:.5}}
 .hero__layout{width:var(--container);margin-inline:auto;display:grid;grid-template-columns:1fr;gap:clamp(2.5rem,5vw,4rem);align-items:center}
 @media (min-width:1020px){.hero__layout{grid-template-columns:1.05fr .95fr}}
-.hero__content{display:flex;flex-direction:column;gap:clamp(1.75rem,3vw,2.5rem);min-width:0}
+.hero__content{display:flex;flex-direction:column;gap:clamp(1.75rem,3vw,2.5rem);min-width:0;margin-top:clamp(1rem,4vw,3rem)}
 .hero__visual{display:flex;align-items:center;justify-content:center}
 .trophy-stage{position:relative;display:flex;align-items:center;justify-content:center;width:100%;padding-block:clamp(1.5rem,5vw,3rem)}
 .trophy-stage__ground{position:absolute;z-index:-1;bottom:clamp(1rem,4vw,2.25rem);width:min(60%,16rem);height:2rem;border-radius:50%;background:radial-gradient(ellipse,rgba(var(--color-paper-rgb),.8) 0%,transparent 72%);filter:blur(6px)}
@@ -206,12 +206,6 @@ ul{list-style:none;margin:0;padding:0}
 .hero__facts li{position:relative;font-size:.9rem;font-weight:600;color:var(--muted-foreground)}
 .hero__facts li:not(:first-child){padding-left:1.25rem}
 .hero__facts li:not(:first-child)::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--green)}
-.scroll-cue{position:absolute;right:max(1.25rem,calc((100vw - 88rem)/2));bottom:2rem;display:none;flex-direction:column;align-items:center;gap:.75rem;font-size:.75rem;color:var(--muted-foreground)}
-.scroll-cue::after{content:"";width:1px;height:3.5rem;background:linear-gradient(var(--green),transparent);animation:cue 2.2s var(--ease-io) infinite paused;animation-play-state:running}
-@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-@media (min-width:1200px){.scroll-cue{display:flex}}
-@media (hover:hover){.scroll-cue:hover::after,.scroll-cue:focus-within::after{animation-play-state:paused}}
-
 /* =========================================================
    MATCHDAY / LAST SEASON
    ========================================================= */

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { GrievanceCategory } from '@/lib/tournax-api';
+import { Button } from '@/components/ui/button';
 
 const CATEGORIES: { value: GrievanceCategory; label: string }[] = [
   { value: 'committee', label: 'Game committee' },
@@ -99,9 +100,9 @@ export function GrievanceForm() {
       {done ? <p className="field--full" style={{ color: 'var(--color-success, #7dffb0)' }}>{done}</p> : null}
       {error ? <p className="field--full admin-login-error" style={{ margin: 0 }}>{error}</p> : null}
       <div className="form__foot field--full">
-        <button className="btn btn--primary" type="submit" disabled={busy}>
+        <Button className="btn btn--primary" type="submit" disabled={busy}>
           {busy ? 'Sending…' : 'Submit grievance'}
-        </button>
+        </Button>
       </div>
     </form>
   );

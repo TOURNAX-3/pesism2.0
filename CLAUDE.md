@@ -59,9 +59,12 @@ Check `docs/roadmap.md`, work on the first unchecked phase, tick items as you fi
 
 ## Design
 - Brand v2 (athletic-poster pivot): deep purple-black (`#1E0825`/`#27092F`), mustard yellow accent
-  (`#DED002`) and violet accent (`#9938D4`), wine-magenta tag chips (`#830D5C`), Onest body font,
-  Furore for display/headline type, oversized uppercase headings, spring reveals, Lenis smooth
-  scroll. A dedicated semantic green (`--color-success`) is kept separate from the brand yellow for
+  (`#DED002`) and violet accent (`#9938D4`), wine-magenta tag chips (`#830D5C`), Furore for
+  display/headline type (the big oversized uppercase moments — hero title, section headlines,
+  format numerals, footer mega-wordmark), "Oscine, Helvetica Neue, Helvetica, Arial, sans-serif"
+  for everything else (body copy, buttons, nav, card/panel subheadings) — Oscine isn't a licensed
+  asset here, so this resolves to Helvetica Neue in practice; spring reveals, Lenis smooth scroll.
+  A dedicated semantic green (`--color-success`) is kept separate from the brand yellow for
   "confirmed"/"open" status states — never reuse the yellow accent for status.
 - Header wordmark is "TOURNAX" (Furore) with "PESISM 2.0" as the small accent-yellow subtitle beneath it.
 - Tokens live in `apps/web/app/tokens.css` (brand) and `apps/web/app/globals.css` (legacy aliases +

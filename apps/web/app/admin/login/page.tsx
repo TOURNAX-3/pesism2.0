@@ -31,9 +31,6 @@ export default async function AdminLoginPage({
         <button type="submit" className="admin-btn admin-btn--primary">
           Sign in
         </button>
-        <p className="admin-muted" style={{ marginTop: '0.5rem', fontSize: '0.75rem' }}>
-          Default dev password: <code>tournax-dev</code> (set <code>ADMIN_PASSWORD</code> in <code>.env.local</code>)
-        </p>
       </form>
     </div>
   );

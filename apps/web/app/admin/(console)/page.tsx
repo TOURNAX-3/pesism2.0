@@ -1,6 +1,7 @@
 import { getAdminDashboard } from '@/lib/tournax-api';
 import { AdminRegistrationActions } from '@/components/admin-registration-actions';
 import { AdminApiStatus } from '@/components/admin-api-status';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,47 +34,59 @@ export default async function AdminOverviewPage() {
       </header>
 
       <div className="admin-stat-grid">
-        <div className="admin-stat">
-          <span className="admin-muted">Registered</span>
-          <strong>{dashboard.totalRegistrations}</strong>
-        </div>
-        <div className="admin-stat">
-          <span className="admin-muted">Approved</span>
-          <strong>{dashboard.approvedCount}</strong>
-        </div>
-        <div className="admin-stat">
-          <span className="admin-muted">Pending</span>
-          <strong>{dashboard.pendingCount}</strong>
-        </div>
-        <div className="admin-stat">
-          <span className="admin-muted">Slots</span>
-          <strong>
-            {dashboard.maxPlayers != null
-              ? `${dashboard.totalRegistrations} / ${dashboard.maxPlayers}`
-              : dashboard.totalRegistrations}
-          </strong>
-        </div>
+        <Card className="admin-stat">
+          <CardContent>
+            <span className="admin-muted">Registered</span>
+            <strong>{dashboard.totalRegistrations}</strong>
+          </CardContent>
+        </Card>
+        <Card className="admin-stat">
+          <CardContent>
+            <span className="admin-muted">Approved</span>
+            <strong>{dashboard.approvedCount}</strong>
+          </CardContent>
+        </Card>
+        <Card className="admin-stat">
+          <CardContent>
+            <span className="admin-muted">Pending</span>
+            <strong>{dashboard.pendingCount}</strong>
+          </CardContent>
+        </Card>
+        <Card className="admin-stat">
+          <CardContent>
+            <span className="admin-muted">Slots</span>
+            <strong>
+              {dashboard.maxPlayers != null
+                ? `${dashboard.totalRegistrations} / ${dashboard.maxPlayers}`
+                : dashboard.totalRegistrations}
+            </strong>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="admin-card">
-        <h3>Registration window</h3>
-        <dl className="admin-dl">
-          <dt>Status</dt>
-          <dd>{dashboard.registrationOpen ? 'Open' : 'Closed'}</dd>
-          <dt>Phase</dt>
-          <dd>{dashboard.status}</dd>
-          <dt>Opens</dt>
-          <dd>{formatInstant(dashboard.registrationOpensAt)}</dd>
-          <dt>Closes</dt>
-          <dd>{formatInstant(dashboard.registrationClosesAt)}</dd>
-        </dl>
-        {!dashboard.registrationOpen ? (
-          <p className="admin-muted" style={{ marginTop: '0.75rem' }}>
-            Closing registration switches the tournament to the <strong>league</strong> phase. Use{' '}
-            <strong>Reopen registration</strong> above to accept new sign-ups again (extends the window by 30 days).
-          </p>
-        ) : null}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Registration window</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className="admin-dl">
+            <dt>Status</dt>
+            <dd>{dashboard.registrationOpen ? 'Open' : 'Closed'}</dd>
+            <dt>Phase</dt>
+            <dd>{dashboard.status}</dd>
+            <dt>Opens</dt>
+            <dd>{formatInstant(dashboard.registrationOpensAt)}</dd>
+            <dt>Closes</dt>
+            <dd>{formatInstant(dashboard.registrationClosesAt)}</dd>
+          </dl>
+          {!dashboard.registrationOpen ? (
+            <p className="admin-muted" style={{ marginTop: '0.75rem' }}>
+              Closing registration switches the tournament to the <strong>league</strong> phase. Use{' '}
+              <strong>Reopen registration</strong> above to accept new sign-ups again (extends the window by 30 days).
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
     </>
   );
 }

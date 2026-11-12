@@ -1,5 +1,6 @@
 import { Icon, UseIcon } from './icon';
 import { RegisterPhotoField } from './register-photo-field';
+import { Button } from './ui/button';
 
 export function RegisterModal() {
   return (
@@ -56,9 +57,9 @@ export function RegisterModal() {
             />
             <div className="form__foot field--full">
               <p className="form__fine">One registration per person. Duplicate or bogus entries may be removed.</p>
-              <button className="btn btn--primary" type="submit">
+              <Button className="btn btn--primary" type="submit">
                 <span className="btn__label">Confirm registration</span>
-              </button>
+              </Button>
             </div>
           </form>
         </div>
@@ -69,7 +70,7 @@ export function RegisterModal() {
           </span>
           <h2 tabIndex={-1}>You&rsquo;re on the list!</h2>
           <p>Thanks for registering. Now go back up what you&rsquo;ve been saying in the group.</p>
-          <button className="btn btn--primary success__done" type="button">Done</button>
+          <Button className="btn btn--primary success__done" type="button">Done</Button>
         </div>
       </div>
     </div>

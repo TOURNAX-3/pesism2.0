@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { AdminApiStatus } from '@/components/admin-api-status';
 import { AdminScheduleMatchForm } from '@/components/admin-schedule-match-form';
 import { listAdminFixtures, listRegistrations } from '@/lib/tournax-api';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,54 +62,52 @@ export default async function AdminSchedulePage() {
           </header>
 
           {!fixtures.length ? (
-            <div className="admin-card">
-              <p className="admin-muted">No league fixtures yet. Add one above, then record scores under Results.</p>
-            </div>
+            <Card>
+              <CardContent>
+                <p className="admin-muted">No league fixtures yet. Add one above, then record scores under Results.</p>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>MD</th>
-                    <th>Home</th>
-                    <th>Score</th>
-                    <th>Away</th>
-                    <th>Status</th>
-                    <th aria-label="Actions" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {fixtures.map((f) => (
-                    <tr key={f.id}>
-                      <td>{f.matchday}</td>
-                      <td>{f.homeName}</td>
-                      <td className="admin-mono">{formatScore(f.homeGoals, f.awayGoals, f.status)}</td>
-                      <td>{f.awayName}</td>
-                      <td>
-                        <span
-                          className={
-                            f.status === 'scheduled' ? 'admin-pill admin-pill--wait' : 'admin-pill admin-pill--ok'
-                          }
-                        >
-                          {f.status}
-                        </span>
-                      </td>
-                      <td className="admin-actions">
-                        {f.status !== 'scheduled' ? (
-                          <Link href={`/admin/fixtures/${f.id}`} className="admin-link">
-                            Edit
-                          </Link>
-                        ) : (
-                          <Link href="/admin/fixtures" className="admin-link">
-                            Enter result
-                          </Link>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Card>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>MD</TableHead>
+                      <TableHead>Home</TableHead>
+                      <TableHead>Score</TableHead>
+                      <TableHead>Away</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead aria-label="Actions" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {fixtures.map((f) => (
+                      <TableRow key={f.id}>
+                        <TableCell>{f.matchday}</TableCell>
+                        <TableCell>{f.homeName}</TableCell>
+                        <TableCell className="admin-mono">{formatScore(f.homeGoals, f.awayGoals, f.status)}</TableCell>
+                        <TableCell>{f.awayName}</TableCell>
+                        <TableCell>
+                          <Badge variant={f.status === 'scheduled' ? 'secondary' : 'default'}>{f.status}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          {f.status !== 'scheduled' ? (
+                            <Link href={`/admin/fixtures/${f.id}`} className="admin-link">
+                              Edit
+                            </Link>
+                          ) : (
+                            <Link href="/admin/fixtures" className="admin-link">
+                              Enter result
+                            </Link>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           )}
 
           {scheduled.length > 0 ? (

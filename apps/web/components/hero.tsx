@@ -93,7 +93,6 @@ export async function Hero() {
           </div>
         </div>
       </div>
-      <div className="scroll-cue" aria-hidden="true">Scroll</div>
     </section>
   );
 }

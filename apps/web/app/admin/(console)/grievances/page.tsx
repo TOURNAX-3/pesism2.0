@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { AdminApiStatus } from '@/components/admin-api-status';
 import { listAdminGrievances, type GrievanceStatus } from '@/lib/tournax-api';
+import { Badge, type badgeVariants } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import type { VariantProps } from 'class-variance-authority';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,12 +15,12 @@ const STATUS_LABEL: Record<GrievanceStatus, string> = {
   rejected: 'Rejected',
 };
 
-function pillClass(status: GrievanceStatus) {
-  if (status === 'resolved') return 'admin-pill admin-pill--ok';
-  if (status === 'rejected') return 'admin-pill admin-pill--danger';
-  if (status === 'in_review') return 'admin-pill admin-pill--wait';
-  return 'admin-pill';
-}
+const STATUS_VARIANT: Record<GrievanceStatus, NonNullable<VariantProps<typeof badgeVariants>['variant']>> = {
+  open: 'outline',
+  in_review: 'secondary',
+  resolved: 'success',
+  rejected: 'destructive',
+};
 
 export default async function AdminGrievancesPage() {
   let rows: Awaited<ReturnType<typeof listAdminGrievances>> = [];
@@ -39,44 +43,48 @@ export default async function AdminGrievancesPage() {
       {error ? (
         <AdminApiStatus error={error} />
       ) : !rows.length ? (
-        <div className="admin-card">
-          <p className="admin-muted">No grievances yet. Players file from the public Grievances page.</p>
-        </div>
+        <Card>
+          <CardContent>
+            <p className="admin-muted">No grievances yet. Players file from the public Grievances page.</p>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>When</th>
-                <th>Player</th>
-                <th>Category</th>
-                <th>Subject</th>
-                <th>Status</th>
-                <th>Notes</th>
-                <th aria-label="Actions" />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((g) => (
-                <tr key={g.id}>
-                  <td className="admin-mono">{new Date(g.createdAt).toLocaleDateString('en-IN')}</td>
-                  <td>{g.playerName}</td>
-                  <td>{g.category}</td>
-                  <td>{g.subject}</td>
-                  <td>
-                    <span className={pillClass(g.status)}>{STATUS_LABEL[g.status]}</span>
-                  </td>
-                  <td>{g.commentCount}</td>
-                  <td>
-                    <Link href={`/admin/grievances/${g.id}`} className="admin-link">
-                      Review
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Card>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>When</TableHead>
+                  <TableHead>Player</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Subject</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Notes</TableHead>
+                  <TableHead aria-label="Actions" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((g) => (
+                  <TableRow key={g.id}>
+                    <TableCell className="admin-mono">{new Date(g.createdAt).toLocaleDateString('en-IN')}</TableCell>
+                    <TableCell>{g.playerName}</TableCell>
+                    <TableCell>{g.category}</TableCell>
+                    <TableCell>{g.subject}</TableCell>
+                    <TableCell>
+                      <Badge variant={STATUS_VARIANT[g.status]}>{STATUS_LABEL[g.status]}</Badge>
+                    </TableCell>
+                    <TableCell>{g.commentCount}</TableCell>
+                    <TableCell>
+                      <Link href={`/admin/grievances/${g.id}`} className="admin-link">
+                        Review
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
     </>
   );

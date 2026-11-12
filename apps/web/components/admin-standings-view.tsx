@@ -2,6 +2,8 @@ import { computeStandings, topScorers } from '@tournax/core';
 import type { SeasonCompetition } from '@/lib/season-competition';
 import { CompetitionComingSoon } from './competition-coming-soon';
 import { LeagueTable } from './league-table';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export function AdminStandingsView({ competition }: { competition: SeasonCompetition }) {
   const live = competition.hasResults;
@@ -13,47 +15,53 @@ export function AdminStandingsView({ competition }: { competition: SeasonCompeti
 
   return (
     <div className="admin-standings-grid">
-      <div className="admin-card">
-        <h3 className="admin-standings-title">League table</h3>
-        {live ? (
-          <div className="admin-table-wrap admin-table-wrap--standings">
-            <LeagueTable rows={table} qualifiers={q} playerNames={names} />
-          </div>
-        ) : (
-          <CompetitionComingSoon label="Record a result under Results to populate the table." />
-        )}
-        <p className="admin-muted" style={{ padding: '0.75rem 0 0', margin: 0 }}>
-          Top {q} qualify for knockouts. Tie-breakers: points, goal difference, goals scored, head to head.
-        </p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>League table</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {live ? (
+            <div className="admin-table-wrap admin-table-wrap--standings">
+              <LeagueTable rows={table} qualifiers={q} playerNames={names} />
+            </div>
+          ) : (
+            <CompetitionComingSoon label="Record a result under Results to populate the table." />
+          )}
+          <p className="admin-muted" style={{ padding: '0.75rem 0 0', margin: 0 }}>
+            Top {q} qualify for knockouts. Tie-breakers: points, goal difference, goals scored, head to head.
+          </p>
+        </CardContent>
+      </Card>
 
-      <div className="admin-card">
-        <h3 className="admin-standings-title">Top scorers</h3>
-        {live ? (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Player</th>
-                  <th>Goals</th>
-                </tr>
-              </thead>
-              <tbody>
+      <Card>
+        <CardHeader>
+          <CardTitle>Top scorers</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {live ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>#</TableHead>
+                  <TableHead>Player</TableHead>
+                  <TableHead>Goals</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {scorers.map((s, i) => (
-                  <tr key={s.playerId}>
-                    <td>{i + 1}</td>
-                    <td>{names[s.playerId] ?? s.playerId}</td>
-                    <td className="admin-mono">{s.goals}</td>
-                  </tr>
+                  <TableRow key={s.playerId}>
+                    <TableCell>{i + 1}</TableCell>
+                    <TableCell>{names[s.playerId] ?? s.playerId}</TableCell>
+                    <TableCell className="admin-mono">{s.goals}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <CompetitionComingSoon label="Scorers appear after the first counted result." />
-        )}
-      </div>
+              </TableBody>
+            </Table>
+          ) : (
+            <CompetitionComingSoon label="Scorers appear after the first counted result." />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

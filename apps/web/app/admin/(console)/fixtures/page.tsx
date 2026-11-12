@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { AdminApiStatus } from '@/components/admin-api-status';
 import { AdminRecordMatchForm } from '@/components/admin-record-match-form';
 import { listAdminFixtures, listAdminMatches } from '@/lib/tournax-api';
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,42 +49,46 @@ export default async function AdminResultsPage() {
           </header>
 
           {!matches.length ? (
-            <div className="admin-card">
-              <p className="admin-muted">No results yet.</p>
-            </div>
+            <Card>
+              <CardContent>
+                <p className="admin-muted">No results yet.</p>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>MD</th>
-                    <th>Home</th>
-                    <th>Score</th>
-                    <th>Away</th>
-                    <th>Stats</th>
-                    <th aria-label="Actions" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {matches.map((m) => (
-                    <tr key={m.id}>
-                      <td>{m.matchday}</td>
-                      <td>{m.homeName}</td>
-                      <td className="admin-mono">
-                        {m.homeGoals !== null && m.awayGoals !== null ? `${m.homeGoals}–${m.awayGoals}` : '—'}
-                      </td>
-                      <td>{m.awayName}</td>
-                      <td>{m.hasStats ? 'Yes' : '—'}</td>
-                      <td>
-                        <Link href={`/admin/fixtures/${m.id}`} className="admin-link">
-                          View / edit
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Card>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>MD</TableHead>
+                      <TableHead>Home</TableHead>
+                      <TableHead>Score</TableHead>
+                      <TableHead>Away</TableHead>
+                      <TableHead>Stats</TableHead>
+                      <TableHead aria-label="Actions" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {matches.map((m) => (
+                      <TableRow key={m.id}>
+                        <TableCell>{m.matchday}</TableCell>
+                        <TableCell>{m.homeName}</TableCell>
+                        <TableCell className="admin-mono">
+                          {m.homeGoals !== null && m.awayGoals !== null ? `${m.homeGoals}–${m.awayGoals}` : '—'}
+                        </TableCell>
+                        <TableCell>{m.awayName}</TableCell>
+                        <TableCell>{m.hasStats ? 'Yes' : '—'}</TableCell>
+                        <TableCell>
+                          <Link href={`/admin/fixtures/${m.id}`} className="admin-link">
+                            View / edit
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           )}
         </>
       )}

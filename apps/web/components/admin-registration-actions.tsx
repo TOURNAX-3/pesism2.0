@@ -1,19 +1,16 @@
 import { closeRegistrationAction, openRegistrationAction } from '@/app/admin/actions';
+import { Button } from '@/components/ui/button';
 
 export function AdminRegistrationActions({ registrationOpen }: { registrationOpen: boolean }) {
   return (
     <div className="admin-registration-actions">
       {registrationOpen ? (
         <form action={closeRegistrationAction}>
-          <button type="submit" className="admin-btn admin-btn--primary">
-            Close registration
-          </button>
+          <Button type="submit">Close registration</Button>
         </form>
       ) : (
         <form action={openRegistrationAction}>
-          <button type="submit" className="admin-btn admin-btn--primary">
-            Reopen registration
-          </button>
+          <Button type="submit">Reopen registration</Button>
         </form>
       )}
     </div>
