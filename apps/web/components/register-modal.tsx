@@ -17,6 +17,7 @@ export async function RegisterModal() {
       aria-labelledby="modal-title"
       data-registration-open={open ? 'true' : 'false'}
       data-registration-hint={hint}
+      data-lenis-prevent
       hidden
     >
       <div className="modal__dialog">
