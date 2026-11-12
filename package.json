@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev": "npm run dev -w @tournax/web",
+    "api": "cd apps/backend && gradlew.bat bootRun",
     "build": "npm run build -w @tournax/web",
     "bot": "npm run dev -w @tournax/bot",
     "test": "npm test -w @tournax/core",

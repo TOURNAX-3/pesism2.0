@@ -12,7 +12,6 @@
  */
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys';
 import { normaliseNumber, parseScoreCommand } from '@tournax/core';
-
 const GROUP_JID = process.env.WA_GROUP_JID ?? '';
 
 async function start() {

@@ -5,6 +5,8 @@ const NAV_LINKS = [
   { href: '/#overview', label: 'Season 3' },
   { href: '/#format', label: 'Format' },
   { href: '/#standings', label: 'Standings' },
+  { href: '/#fixtures', label: 'Fixtures' },
+  { href: '/grievances', label: 'Grievances' },
   { href: '/#schedule', label: 'Schedule' },
   { href: '/#prizes', label: 'Prize Pool' },
 ];
