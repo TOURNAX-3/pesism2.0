@@ -1,8 +1,21 @@
 import type { CSSProperties } from 'react';
+import { fetchRegistrationWindow, registrationWindowSummary, spotsLabel } from '@/lib/registration-window';
 import { SplitHeading } from './split-heading';
 import { Button } from './ui/button';
 
-export function Cta() {
+export async function Cta() {
+  const window = await fetchRegistrationWindow();
+  const slots = spotsLabel(window);
+  const schedule = registrationWindowSummary(window);
+  const fine =
+    window?.open && slots
+      ? `${slots} Secure your place — ${schedule ?? 'registration closes soon'}.`
+      : schedule
+        ? slots
+          ? `${slots} ${schedule}.`
+          : schedule
+        : 'Limited slots. League fixtures follow whoever signs up.';
+
   return (
     <section className="cta" id="register-cta" aria-labelledby="cta-title">
       <div className="cta__bg" aria-hidden="true"></div>
@@ -24,7 +37,7 @@ export function Cta() {
             Register for Season 3
           </Button>
         </div>
-        <p className="cta__small" data-reveal>Limited slots available. Secure your place before registration closes.</p>
+        <p className="cta__small" data-reveal>{fine}</p>
       </div>
     </section>
   );

@@ -348,6 +348,21 @@ export function SiteInteractions() {
     const successView = modal ? $<HTMLElement>('[data-view="success"]', modal) : null;
     const form = formView ? $<HTMLFormElement>('form', formView) : null;
     const submitBtn = form ? $<HTMLButtonElement>('button[type="submit"]', form) : null;
+
+    function registrationAllowed(): boolean {
+      return modal?.getAttribute('data-registration-open') === 'true';
+    }
+
+    function syncSubmitEnabled() {
+      if (!submitBtn) return;
+      if (!registrationAllowed()) {
+        submitBtn.disabled = true;
+        const label = $<HTMLElement>('.btn__label', submitBtn);
+        if (label && !registrationAllowed()) label.textContent = 'Registration not open yet';
+      }
+    }
+    syncSubmitEnabled();
+
     let modalOpen = false;
     let modalReturnFocus: HTMLElement | null = null;
     let submitTimer: ReturnType<typeof setTimeout> | null = null;
@@ -425,9 +440,11 @@ export function SiteInteractions() {
       if (submitTimer) clearTimeout(submitTimer);
       form.reset();
       $$<HTMLElement>('.field', form).forEach(f => setError(f, ''));
-      submitBtn.disabled = false;
-      const label = $<HTMLElement>('.btn__label', submitBtn);
-      if (label) label.textContent = 'Confirm registration';
+      syncSubmitEnabled();
+      if (registrationAllowed()) {
+        const label = $<HTMLElement>('.btn__label', submitBtn);
+        if (label) label.textContent = 'Confirm registration';
+      }
       formView.hidden = false;
       successView.hidden = true;
     }
@@ -450,7 +467,7 @@ export function SiteInteractions() {
     const apiErrors: Record<string, string> = {
       already_registered: 'You are already registered for this season.',
       identity_conflict: 'These details match another account. Use the same email and WhatsApp as before, or contact an admin.',
-      registration_closed: 'Registration is closed.',
+      registration_closed: 'Registration is closed or has not opened yet.',
       tournament_full: 'All slots are full.',
       validation_error: 'Check the form and try again.',
       upload_error: 'Could not upload your photo. Check the file or try again.',
@@ -459,6 +476,12 @@ export function SiteInteractions() {
     const onFormSubmit = async (e: Event) => {
       e.preventDefault();
       if (!validate() || !submitBtn || !formView || !successView || !form) return;
+      if (!registrationAllowed()) {
+        const hint = modal?.getAttribute('data-registration-hint') ?? 'Registration is not open yet.';
+        const firstField = $<HTMLElement>('.field', form);
+        if (firstField) setError(firstField, hint);
+        return;
+      }
       submitBtn.disabled = true;
       const label = $<HTMLElement>('.btn__label', submitBtn);
       if (label) label.textContent = 'Registering…';

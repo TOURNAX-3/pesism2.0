@@ -6,7 +6,11 @@ export async function Format() {
   const qualifiers = competition?.knockoutQualifiers ?? 8;
 
   const STAGES = [
-    { num: '1', title: 'League', body: 'Everyone plays everyone. No hiding from anyone.' },
+    {
+      num: '1',
+      title: 'League',
+      body: 'Everyone plays everyone. Fixtures follow however many are in the squad — no fixed headcount yet.',
+    },
     { num: '2', title: 'Quarter-finals', body: `Finish in the top ${qualifiers} or watch from the sidelines.` },
     { num: '3', title: 'Semi-finals', body: 'One match. Lose and you’re out.' },
     { num: '4', title: 'Final', body: 'Ninety minutes for the crown.' },

@@ -1,36 +1,20 @@
 import type { CSSProperties } from 'react';
 import Image from 'next/image';
-import { getAdminDashboard } from '@/lib/tournax-api';
+import {
+  fetchRegistrationWindow,
+  registrationWindowSummary,
+  spotsLabel as registrationSpotsLabel,
+} from '@/lib/registration-window';
 import { Button } from './ui/button';
 
 function d(ms: number): CSSProperties {
   return { '--d': `${ms}ms` } as CSSProperties;
 }
 
-function formatDate(iso: string | null | undefined) {
-  if (!iso) return null;
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' }).format(new Date(iso));
-}
-
 export async function Hero() {
-  let dashboard: Awaited<ReturnType<typeof getAdminDashboard>> | null = null;
-  try {
-    dashboard = await getAdminDashboard();
-  } catch {
-    dashboard = null;
-  }
-
-  const spotsLeft =
-    dashboard?.maxPlayers != null ? Math.max(0, dashboard.maxPlayers - dashboard.totalRegistrations) : null;
-  const spotsLabel =
-    dashboard?.registrationOpen && spotsLeft !== null
-      ? `${spotsLeft} spots left`
-      : dashboard?.maxPlayers != null
-        ? `${dashboard.maxPlayers} spots`
-        : null;
-  // No explicit "league starts" field on the tournament yet — registration close is the closest
-  // real date we have for "when this gets going", so that's what this fact shows.
-  const startDate = formatDate(dashboard?.registrationClosesAt);
+  const window = await fetchRegistrationWindow();
+  const spotsLabel = registrationSpotsLabel(window);
+  const windowLine = registrationWindowSummary(window);
 
   return (
     <section className="hero" aria-labelledby="hero-title">
@@ -73,7 +57,7 @@ export async function Hero() {
           <ul className="hero__facts" data-hero style={d(1300)}>
             {spotsLabel ? <li>{spotsLabel}</li> : null}
             <li>Free entry</li>
-            {startDate ? <li>Starts {startDate}</li> : null}
+            {windowLine ? <li>{windowLine}</li> : null}
             <li>1 crown</li>
           </ul>
         </div>
