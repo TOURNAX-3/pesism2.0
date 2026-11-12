@@ -4,6 +4,8 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
+# Must match Dockerfile ENTRYPOINT — do not use build/libs/* (that folder is not in the image).
+startCommand = "java -jar /app/app.jar"
 healthcheckPath = "/api/v1/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
