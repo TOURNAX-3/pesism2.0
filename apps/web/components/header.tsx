@@ -16,8 +16,8 @@ export function Header() {
         <a className="brand" href="/" aria-label="TOURNAX home">
           <UseIcon id="emblem" />
           <span className="brand__word">
-            TOURNAX
-            <small>Season 3</small>
+            <span className="brand__name">TOURNAX</span>
+            <small>PESISM 2.0</small>
           </span>
         </a>
         <nav className="nav" aria-label="Primary">
