@@ -10,7 +10,7 @@ export function Footer() {
               <UseIcon id="emblem" />
               <span className="brand__word">
                 TOURNAX
-                <small>Season 3</small>
+                <small>PESISM 2.0</small>
               </span>
             </a>
             <p>Bringing eFootball players together to settle the debate on the pitch. Competition, community, and a crown worth fighting for.</p>
@@ -21,11 +21,10 @@ export function Footer() {
           <nav className="footer__col" aria-label="Tournament">
             <h3>Tournament</h3>
             <ul>
-              <li><a href="/#overview">Season 3</a></li>
+              <li><a href="/#matchday">Matchday</a></li>
               <li><a href="/#format">Format</a></li>
               <li><a href="/table">Standings</a></li>
               <li><a href="/fixtures">Fixtures</a></li>
-              <li><a href="/#prizes">Prize Pool</a></li>
             </ul>
           </nav>
           <nav className="footer__col" aria-label="Community">

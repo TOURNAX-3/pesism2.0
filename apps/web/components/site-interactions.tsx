@@ -154,12 +154,24 @@ export function SiteInteractions() {
         const loader = $('.loader');
         const fill = $<HTMLElement>('.loader__fill');
         const num = $('.loader__num');
+        const status = $<HTMLElement>('.loader__status');
         if (!loader || !fill || !num) { resolve(); return; }
         const MIN = 1400, MAX = 2300, EXIT = 850;
         let loaded = document.readyState === 'complete';
         window.addEventListener('load', () => { loaded = true; }, { once: true });
 
+        const STATUS_MESSAGES = ['Loading egos…', 'Checking excuses…', 'Warming up the banter…'];
+        let statusTimer: ReturnType<typeof setInterval> | null = null;
+        if (status && !reduced) {
+          let i = 0;
+          statusTimer = setInterval(() => {
+            i = (i + 1) % STATUS_MESSAGES.length;
+            status.textContent = STATUS_MESSAGES[i];
+          }, 700);
+        }
+
         const finish = () => {
+          if (statusTimer) clearInterval(statusTimer);
           loader.classList.add('is-exiting');
           setTimeout(() => loader.remove(), reduced ? 0 : EXIT);
           resolve();
@@ -190,29 +202,18 @@ export function SiteInteractions() {
       });
     }
 
-    // ---------- Scroll fx: header + format timeline ----------
+    // ---------- Scroll fx: header ----------
     function initScrollFx() {
       const header = $('.header');
-      const track = $<HTMLElement>('.track');
-      const stages = $$<HTMLElement>('.stage');
-      const updateTimeline = () => {
-        if (!track) return;
-        const r = track.getBoundingClientRect();
-        const vh = window.innerHeight;
-        const p = clamp((vh * 0.8 - r.top) / (r.height + vh * 0.35), 0, 1);
-        track.style.setProperty('--progress', p.toFixed(3));
-        stages.forEach((s, i) => s.classList.toggle('is-active', p >= (i / (stages.length - 1)) * 0.92 + 0.02));
-      };
       let lastY = -1;
       const tick = () => {
         const y = window.scrollY;
         if (y === lastY) return;
         lastY = y;
         header?.classList.toggle('is-scrolled', y > 40);
-        updateTimeline();
       };
       ticks.add(tick);
-      updateTimeline();
+      tick();
       return () => ticks.delete(tick);
     }
 

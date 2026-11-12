@@ -2,7 +2,7 @@ import type { SeasonCompetition } from '@/lib/season-competition';
 import { isCountedMatch, matchdayChipsByNumber } from '@/lib/matchday-status';
 import { CompetitionComingSoon } from './competition-coming-soon';
 
-function groupByMatchday(competition: SeasonCompetition) {
+export function groupByMatchday(competition: SeasonCompetition) {
   const days = new Map<number, SeasonCompetition['matches']>();
   for (const match of competition.matches) {
     const list = days.get(match.matchday) ?? [];

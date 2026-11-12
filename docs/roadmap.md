@@ -30,7 +30,8 @@ Tick items off as they ship. Keep each phase shippable on its own.
 - [ ] Deploy to an always on host
 
 ## Phase 4: Knockouts and extras
-- [ ] Knockout bracket from top N of the league, two legs optional, penalties
+- [ ] Knockout bracket from top 8 of the league (`knockout_qualifiers`, default 8): quarter-finals
+      → semi-finals → final, single matches, penalties on a draw
 - [ ] Bracket page
 - [ ] `!table`, `!fixtures`, deadline reminders
 - [ ] Shareable result / table images (OG image route)

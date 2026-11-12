@@ -1,13 +1,37 @@
 import type { CSSProperties } from 'react';
-import { Icon, UseIcon } from './icon';
+import Image from 'next/image';
+import { getAdminDashboard } from '@/lib/tournax-api';
+import { Button } from './ui/button';
 
 function d(ms: number): CSSProperties {
   return { '--d': `${ms}ms` } as CSSProperties;
 }
 
-const TROPHY_LAYERS = 14;
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return null;
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' }).format(new Date(iso));
+}
 
-export function Hero() {
+export async function Hero() {
+  let dashboard: Awaited<ReturnType<typeof getAdminDashboard>> | null = null;
+  try {
+    dashboard = await getAdminDashboard();
+  } catch {
+    dashboard = null;
+  }
+
+  const spotsLeft =
+    dashboard?.maxPlayers != null ? Math.max(0, dashboard.maxPlayers - dashboard.totalRegistrations) : null;
+  const spotsLabel =
+    dashboard?.registrationOpen && spotsLeft !== null
+      ? `${spotsLeft} spots left`
+      : dashboard?.maxPlayers != null
+        ? `${dashboard.maxPlayers} spots`
+        : null;
+  // No explicit "league starts" field on the tournament yet — registration close is the closest
+  // real date we have for "when this gets going", so that's what this fact shows.
+  const startDate = formatDate(dashboard?.registrationClosesAt);
+
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__grid" aria-hidden="true"></div>
@@ -27,82 +51,44 @@ export function Hero() {
               <span className="word"><span className="accent" style={d(550)}>TOURNAX</span></span>
             </span>
             <span className="row">
-              <span className="word"><span style={d(700)}>Season</span></span> <span className="word"><span style={d(850)}>3.</span></span>
+              <span className="word"><span style={d(700)}>PESISM</span></span> <span className="word"><span style={d(850)}>2.0</span></span>
             </span>
           </h1>
 
           <div className="hero__sub">
-            <p className="hero__tagline" data-hero style={d(1000)}>Every win counts. Every goal matters.</p>
+            <p className="hero__tagline" data-hero style={d(1000)}>The group chat ends here. The pitch decides.</p>
             <p className="hero__desc" data-hero style={d(1100)}>
-              Time to find out who&rsquo;s actually good at eFootball and who&rsquo;s just good at talking. TOURNAX is back for Season 3, and this time it&rsquo;s even more intense.
+              The banter&rsquo;s been loud all year. Now it gets settled. One league, one champion, and a group chat that never forgets.
             </p>
             <div className="hero__ctas" data-hero style={d(1200)}>
-              <button className="btn btn--primary" type="button" data-open-register>
-                Register now
-              </button>
-              <a className="btn--text" href="#overview">
-                Explore the tournament
+              <Button className="btn btn--primary" type="button" data-open-register>
+                Claim your spot
+              </Button>
+              <a className="btn--text" href="#standings">
+                See the table
               </a>
             </div>
           </div>
 
-          {/* Edit these values for your tournament */}
-          <dl className="hero__info">
-            <div className="info card" data-reveal data-hero-card>
-              <dt className="info__tag">
-                <span className="info__tag-num">01</span>
-                <span className="info__tag-label">Tournament date</span>
-              </dt>
-              <dd className="info__value">
-                <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} html={'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4m8-4v4"/>'} />
-                <span className="info__value-text">28 Nov to 15 Dec 2026</span>
-              </dd>
-            </div>
-            <div className="info card" data-reveal data-hero-card>
-              <dt className="info__tag">
-                <span className="info__tag-num">02</span>
-                <span className="info__tag-label">Players</span>
-              </dt>
-              <dd className="info__value">
-                <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} html={'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7m2.5 8.5a6.5 6.5 0 0 0-3-5.5"/>'} />
-                <span className="info__value-text">128 slots</span>
-              </dd>
-            </div>
-            <div className="info card" data-reveal data-hero-card>
-              <dt className="info__tag">
-                <span className="info__tag-num">03</span>
-                <span className="info__tag-label">Entry fee</span>
-              </dt>
-              <dd className="info__value">
-                <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} html={'<path d="M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a3 3 0 0 0 0 6v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a3 3 0 0 0 0-6z"/><path d="M14 4v16" stroke-dasharray="2 3"/>'} />
-                <span className="info__value-text">Free</span>
-              </dd>
-            </div>
-            <div className="info card" data-reveal data-hero-card>
-              <dt className="info__tag">
-                <span className="info__tag-num">04</span>
-                <span className="info__tag-label">Prize pool</span>
-              </dt>
-              <dd className="info__value">
-                <UseIcon id="i-trophy" />
-                <span className="info__value-text">&#8377;50,000</span>
-              </dd>
-            </div>
-          </dl>
+          <ul className="hero__facts" data-hero style={d(1300)}>
+            {spotsLabel ? <li>{spotsLabel}</li> : null}
+            <li>Free entry</li>
+            {startDate ? <li>Starts {startDate}</li> : null}
+            <li>1 crown</li>
+          </ul>
         </div>
 
         <div className="hero__visual" data-hero style={d(750)}>
           <div className="trophy-stage">
-            <div className="trophy-stage__glow" aria-hidden="true"></div>
-            <div className="hero__trophy" aria-hidden="true">
-              <div className="trophy3d">
-                {Array.from({ length: TROPHY_LAYERS }).map((_, i) => (
-                  <span className="trophy3d__layer" key={i} style={{ '--i': i } as CSSProperties}>
-                    <UseIcon id="emblem" />
-                  </span>
-                ))}
-              </div>
-            </div>
+            <Image
+              src="/hero/trophy.png"
+              alt=""
+              width={993}
+              height={1583}
+              priority
+              className="hero__trophy-img"
+              sizes="(min-width: 1020px) 320px, 70vw"
+            />
             <div className="trophy-stage__ground" aria-hidden="true"></div>
           </div>
         </div>

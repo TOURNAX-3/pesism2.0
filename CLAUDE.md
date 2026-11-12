@@ -35,7 +35,8 @@ Check `docs/roadmap.md`, work on the first unchecked phase, tick items as you fi
 
 ## Domain rules (do not change without asking)
 - **Format**: league stage (round robin, everyone plays everyone), then the top N
-  (`knockout_qualifiers`, default 4) go to knockout rounds and a grand final.
+  (`knockout_qualifiers`, default 8) go to knockouts: quarter-finals → semi-finals → final, all
+  single matches. The number is always a tournament setting — never hardcode it in copy.
 - **Points**: win 3, draw 1, loss 0 (configurable per tournament).
 - **Tiebreakers**: points, goal difference, goals scored, head to head. Implemented in `packages/core/src/standings.ts`.
 - **Standings and top scorers are always computed, never stored.** Use `computeStandings` and `topScorers`.
@@ -85,8 +86,9 @@ Check `docs/roadmap.md`, work on the first unchecked phase, tick items as you fi
 - Ask before adding a new dependency that isn't already listed here.
 
 ## Open questions for the organiser (Adhil)
-- Entry is free (no entry fee — the tournament doesn't generate money). Real dates, number of
-  slots and prize pool are still placeholders on the landing page.
+- Entry is free (no entry fee — the tournament doesn't generate money; there is no prize pool and
+  the public site makes no mention of one). Real dates and number of slots are still placeholders
+  on the landing page.
 - Top scorer: participant's total goals (current assumption) or in game footballer goals?
-- Knockouts: single match or two legs? How many qualify?
+- Knockouts: resolved — top 8, single matches, quarter-finals → semi-finals → final.
 - What is the "something big" surprise, and should a section stay hidden until it's announced?

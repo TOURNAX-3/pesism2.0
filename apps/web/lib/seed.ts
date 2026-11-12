@@ -9,13 +9,7 @@ export interface SeedPlayer {
   platform: 'PlayStation' | 'Xbox' | 'PC';
 }
 
-export interface ScheduleItem {
-  title: string;
-  date: string;
-  status: 'open' | 'upcoming' | 'done';
-}
-
-export const KNOCKOUT_QUALIFIERS = 4;
+export const KNOCKOUT_QUALIFIERS = 8;
 
 export const PLAYERS: SeedPlayer[] = [
   { id: 'arjun', name: 'Arjun Menon', tag: 'ArjunFC', city: 'Kochi', platform: 'PlayStation' },
@@ -33,15 +27,6 @@ export const PLAYER_IDS: PlayerId[] = PLAYERS.map(p => p.id);
 export function getPlayer(id: PlayerId): SeedPlayer | undefined {
   return PLAYERS.find(p => p.id === id);
 }
-
-export const SCHEDULE: ScheduleItem[] = [
-  { title: 'Registration Opens', date: '2026-11-15', status: 'open' },
-  { title: 'Registration Closes', date: '2026-11-25', status: 'upcoming' },
-  { title: 'League Stage Kicks Off', date: '2026-11-28', status: 'upcoming' },
-  { title: 'Quarter Finals', date: '2026-12-05', status: 'upcoming' },
-  { title: 'Semi Finals', date: '2026-12-10', status: 'upcoming' },
-  { title: 'Grand Final', date: '2026-12-15', status: 'upcoming' },
-];
 
 // Deterministic, varied scorelines for the played matchdays below.
 // Not meant to reproduce any particular table shape, just plausible results

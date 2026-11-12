@@ -1,15 +1,13 @@
 import type { CSSProperties } from 'react';
 import { UseIcon } from './icon';
+import { Button } from './ui/button';
 
 const LINKS = [
   { href: '/#top', label: 'Home' },
-  { href: '/#overview', label: 'Season 3' },
+  { href: '/#matchday', label: 'Matchday' },
   { href: '/#format', label: 'Format' },
-  { href: '/#standings', label: 'Standings' },
-  { href: '/#fixtures', label: 'Fixtures' },
-  { href: '/grievances', label: 'Grievances' },
-  { href: '/#schedule', label: 'Schedule' },
-  { href: '/#prizes', label: 'Prize Pool' },
+  { href: '/#standings', label: 'Table' },
+  { href: '/#players', label: 'Players' },
   { href: '/#contact', label: 'Contact' },
 ];
 
@@ -22,7 +20,7 @@ export function FullscreenMenu() {
             <UseIcon id="emblem" />
             <span className="brand__word">
               TOURNAX
-              <small>Season 3</small>
+              <small>PESISM 2.0</small>
             </span>
           </a>
           <button className="menu__close" type="button" aria-label="Close menu">
@@ -43,10 +41,10 @@ export function FullscreenMenu() {
             </ul>
           </nav>
           <div className="menu__aside">
-            <p>TOURNAX Season 3 is on the horizon. Every win counts, every goal matters.</p>
-            <button className="btn btn--primary" type="button" data-open-register style={{ alignSelf: 'flex-start' }}>
+            <p>Talk is cheap. Goals aren&rsquo;t. Every win counts, every goal matters.</p>
+            <Button className="btn btn--primary" type="button" data-open-register style={{ alignSelf: 'flex-start' }}>
               Register now
-            </button>
+            </Button>
             <div className="socials">
               <a className="social" href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">
                 <UseIcon id="i-insta" />

@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function StandingsPanels({ competition, scorersLimit, showFootLink = false }: Props) {
-  const qualifiers = competition?.knockoutQualifiers ?? 4;
+  const qualifiers = competition?.knockoutQualifiers ?? 8;
   const playerIds = competition?.players.map((p) => p.id) ?? [];
   const playerNames = competition?.playerNames ?? {};
   const points = competition?.points;
@@ -35,7 +35,7 @@ export function StandingsPanels({ competition, scorersLimit, showFootLink = fals
           <CompetitionComingSoon label="The table goes live once the first results are in." />
         )}
         <p className="panel__foot">
-          Top {qualifiers} qualify for the knockout rounds.
+          Top {qualifiers} make the quarter-finals. Everyone else goes home and reflects.
           {showFootLink ? (
             <>
               {' '}
@@ -47,13 +47,13 @@ export function StandingsPanels({ competition, scorersLimit, showFootLink = fals
 
       <div className="panel" data-reveal>
         <div className="panel__head">
-          <h3>Top scorers</h3>
+          <h3>Golden Boot race</h3>
           {live ? <span className="chip chip--live">Live</span> : <span className="chip">Coming soon</span>}
         </div>
         {live ? (
           <TopScorers scorers={scorersShown} playerNames={playerNames} />
         ) : (
-          <CompetitionComingSoon label="Goals will show up here after matches are played." />
+          <CompetitionComingSoon label="No goals yet. The strikers are warming up." />
         )}
       </div>
     </div>

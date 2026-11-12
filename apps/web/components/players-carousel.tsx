@@ -20,10 +20,10 @@ export async function PlayersCarousel() {
     <section className="section players" id="players" aria-labelledby="players-title">
       <div className="container">
         <div className="section__head section__head--split">
-          <SplitHeading id="players-title" lines={['Built to', 'compete.']} />
+          <SplitHeading id="players-title" lines={['Meet the', 'contenders.']} />
           <p className="lead" data-reveal>
             {players.length
-              ? 'Approved players this season. Rankings update after every recorded result.'
+              ? 'Every one of them thinks they’re winning this. Only one is right.'
               : 'Player cards appear here once registrations are approved.'}
           </p>
         </div>

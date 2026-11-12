@@ -9,9 +9,9 @@ export async function StandingsSection() {
     <section className="section standings" id="standings" aria-labelledby="standings-title">
       <div className="container">
         <div className="section__head section__head--split">
-          <SplitHeading id="standings-title" lines={['Talk is cheap.', 'The table isn’t.']} />
+          <SplitHeading id="standings-title" lines={['The table', 'doesn’t lie.']} />
           <p className="lead" data-reveal>
-            Results land here after they are confirmed. Until the season starts playing, you will see coming soon instead of placeholder numbers.
+            Updated after every confirmed result. Both players agree, or the admin settles it.
           </p>
         </div>
 

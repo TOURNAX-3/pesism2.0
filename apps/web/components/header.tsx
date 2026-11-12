@@ -1,14 +1,12 @@
 import { UseIcon } from './icon';
+import { Button } from './ui/button';
 
 const NAV_LINKS = [
   { href: '/#top', label: 'Home' },
-  { href: '/#overview', label: 'Season 3' },
+  { href: '/#matchday', label: 'Matchday' },
   { href: '/#format', label: 'Format' },
-  { href: '/#standings', label: 'Standings' },
-  { href: '/#fixtures', label: 'Fixtures' },
-  { href: '/grievances', label: 'Grievances' },
-  { href: '/#schedule', label: 'Schedule' },
-  { href: '/#prizes', label: 'Prize Pool' },
+  { href: '/#standings', label: 'Table' },
+  { href: '/#players', label: 'Players' },
 ];
 
 export function Header() {
@@ -32,9 +30,9 @@ export function Header() {
           </ul>
         </nav>
         <div className="header__actions">
-          <button className="btn btn--primary btn--sm header__cta" type="button" data-open-register>
+          <Button className="btn btn--primary btn--sm header__cta" type="button" data-open-register>
             Register now
-          </button>
+          </Button>
           <button className="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
             <span className="bars" aria-hidden="true">
               <span></span>

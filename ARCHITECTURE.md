@@ -93,22 +93,26 @@ go through a `public_players` view (see the migration) that strips them.
   `computeStandings`/`topScorers` functions the real backend will use. Swapping `seed.ts` for a
   Supabase query is the only change `/table`, `/fixtures` and `/players/[id]` should need in
   Phase 2 — they already don't know or care where the data comes from.
-- **Components** (`components/*.tsx`): one component per section (`hero`, `overview`, `format`,
-  `standings-section`, `schedule`, `prizes`, `cta`, `footer`, header/menu/modal chrome). Server
-  components by default; nothing is a client component except what truly needs interactivity.
+- **Components** (`components/*.tsx`): one component per landing section, in page order —
+  `hero`, `matchday-section` (mode-driven: live matchday fixtures or a last-season recap, derived
+  from the tournament's own status, no dedicated DB flag needed), `format`, `quote-divider`
+  (a single banter-line section divider), `standings-section`, `players-carousel`, `cta`, `footer`,
+  plus header/menu/modal chrome. Server components by default; nothing is a client component except
+  what truly needs interactivity.
 - **`site-interactions.tsx`** (~540 lines) is the one client component that owns *all* imperative,
   vanilla-JS-style behavior in one place, ported close to 1:1 from the original static design so
   the motion/timing stays exactly as designed:
   - Lenis smooth scroll (lazy-loaded, degrades to native scroll if it fails to load)
   - A tiny spring-physics engine driving the reveal-on-scroll animations (`data-reveal`,
     `data-split`), run off one shared `requestAnimationFrame` loop (`ticks` set)
-  - The intro loader, the fullscreen menu, the registration modal, the players carousel, the
-    format section's scroll-progress timeline, the header's scrolled-state and active-nav-link spy
+  - The intro loader (with a rotating status line), the fullscreen menu, the registration modal,
+    the players carousel, the header's scrolled-state and active-nav-link spy
   - Every effect is written to be inert with JS disabled or `prefers-reduced-motion: reduce` set —
     content is visible by default; motion is opt-in once a script confirms it can run
-- **Icons**: a single inline `<svg><defs>` sprite (`icon-sprite.tsx`) holds gradients and reusable
-  `<symbol>`s (including the trophy emblem, used as the wordmark, the loader mark, and the hero's
-  layered 3D visual); one-off icons are inline path strings via the `Icon` component.
+- **Icons**: a single inline `<svg><defs>` sprite (`icon-sprite.tsx`) holds the brand gradient and
+  reusable `<symbol>`s (including the emblem mark used as the wordmark and the loader mark); the
+  hero's trophy is a plain `next/image` (`public/hero/trophy.png`), not an SVG symbol; one-off
+  icons are inline path strings via the `Icon` component.
 
 ## Design system
 
@@ -148,7 +152,9 @@ See `docs/roadmap.md` for the full checklist. In short, the site currently runs 
 ## Open decisions (ask the organiser)
 
 - Top scorer: participant's total goals (current assumption) or in-game footballer goals?
-- Knockouts: single match or two legs? How many qualify (`knockout_qualifiers`, default 4)?
+- Knockouts: resolved — top 8 (`knockout_qualifiers`, default 8), single matches, quarter-finals →
+  semi-finals → final.
 - What's the "something big" surprise, and should a section stay hidden until it's announced?
-- Real tournament dates, slot count and prize pool are still placeholders on the landing page
-  (entry is confirmed free — no entry fee, the tournament doesn't generate money).
+- Real tournament dates and slot count are still placeholders on the landing page. Entry is
+  confirmed free — no entry fee, no prize pool; the tournament doesn't generate money and the
+  public site makes no mention of prize money.
