@@ -414,25 +414,36 @@ export function SiteInteractions() {
       if (err) err.textContent = msg || '';
       $$<HTMLInputElement>('input', field).forEach(i => i.setAttribute('aria-invalid', msg ? 'true' : 'false'));
     }
+    function fieldControlIsValid(field: HTMLElement): { ok: boolean; control: HTMLElement | null; msgKey: string } {
+      const inputs = $$<HTMLInputElement>('input', field);
+      const select = $<HTMLSelectElement>('select', field);
+      if (select) {
+        const ok = select.checkValidity() && select.value.trim() !== '';
+        return { ok, control: select, msgKey: select.name };
+      }
+      if (!inputs.length) return { ok: true, control: null, msgKey: '' };
+      const fileInput = inputs.find(i => i.type === 'file');
+      const input = fileInput ?? inputs[0];
+      const ok =
+        input.type === 'radio'
+          ? inputs.some(i => i.checked)
+          : input.type === 'file'
+            ? input.files != null && input.files.length > 0
+            : input.checkValidity() && input.value.trim() !== '';
+      const msgKey = input.name === 'photo' ? 'photo' : input.name;
+      return { ok, control: input, msgKey };
+    }
+
     function validate(): boolean {
       if (!form) return false;
-      let firstBad: HTMLInputElement | null = null;
+      let firstBad: HTMLElement | null = null;
       $$<HTMLElement>('.field', form).forEach(field => {
-        const inputs = $$<HTMLInputElement>('input', field);
-        if (!inputs.length) return;
-        const fileInput = inputs.find(i => i.type === 'file');
-        const input = fileInput ?? inputs[0];
-        const ok =
-          input.type === 'radio'
-            ? inputs.some(i => i.checked)
-            : input.type === 'file'
-              ? input.files != null && input.files.length > 0
-              : input.checkValidity() && input.value.trim() !== '';
-        const msgKey = input.name === 'photo' ? 'photo' : input.name;
+        const { ok, control, msgKey } = fieldControlIsValid(field);
+        if (!control && ok) return;
         setError(field, ok ? '' : messages[msgKey] ?? 'This field is required.');
-        if (!ok && !firstBad) firstBad = input;
+        if (!ok && !firstBad && control) firstBad = control;
       });
-      if (firstBad) (firstBad as HTMLInputElement).focus();
+      if (firstBad) (firstBad as HTMLElement).focus();
       return !firstBad;
     }
     function resetForm() {
@@ -453,14 +464,7 @@ export function SiteInteractions() {
       const target = e.target as HTMLElement;
       const field = target.closest<HTMLElement>('.field');
       if (field && field.classList.contains('has-error')) {
-        const inputs = $$<HTMLInputElement>('input', field);
-        const input = inputs[0];
-        const ok =
-          input.type === 'radio'
-            ? inputs.some(i => i.checked)
-            : input.type === 'file'
-              ? input.files != null && input.files.length > 0
-              : input.checkValidity() && input.value.trim() !== '';
+        const { ok } = fieldControlIsValid(field);
         if (ok) setError(field, '');
       }
     };

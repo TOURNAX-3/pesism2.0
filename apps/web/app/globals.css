@@ -423,6 +423,7 @@ ul{list-style:none;margin:0;padding:0}
 .photo-upload__hint{margin:0;font-size:.85rem;color:var(--muted-2);line-height:1.45;max-width:20rem}
 .field input::placeholder{color:var(--muted-2)}
 .field.has-error input,.field.has-error select,.field.has-error textarea{border-color:var(--danger)}
+.field__hint{margin:.2rem 0 0;font-size:.85rem;color:var(--muted-2);line-height:1.45}
 .field__error{font-size:.85rem;color:var(--danger-soft);min-height:0}
 fieldset.field{border:0;margin:0;padding:0;min-width:0}
 fieldset.field legend{padding:0;margin-bottom:.45rem}

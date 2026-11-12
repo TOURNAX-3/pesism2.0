@@ -67,7 +67,7 @@ export async function PlayersCarousel() {
                         </span>
                         <span className="player__city">
                           <UseIcon id="i-pin" />
-                          {player.city ? `${player.city}, IN` : 'India'}
+                          {player.city ?? 'India'}
                         </span>
                       </div>
                       <div className="player__body">

@@ -39,6 +39,7 @@ export async function RegisterModal() {
             <div className="field">
               <label htmlFor="f-gamer">Gaming username</label>
               <input id="f-gamer" name="gamer" type="text" autoComplete="nickname" required placeholder="ArjunFC" />
+              <p className="field__hint">No separate tag? Use the same name as your eFootball username below.</p>
               <span className="field__error" aria-live="polite"></span>
             </div>
             <div className="field">
