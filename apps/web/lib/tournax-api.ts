@@ -25,6 +25,8 @@ export type AdminRegistration = {
   city: string;
   efootballUsername: string | null;
   avatarUrl: string | null;
+  emailVerified: boolean;
+  emailVerifiedAt: string | null;
   approved: boolean;
   joinedAt: string;
 };
@@ -63,6 +65,28 @@ export function getAdminDashboard(season = CURRENT_SEASON) {
 
 export function listRegistrations(season = CURRENT_SEASON) {
   return adminFetch<AdminRegistration[]>(`/api/v1/admin/seasons/${season}/registrations`);
+}
+
+export type RegistrationAuditRow = {
+  id: number;
+  tournamentId: string | null;
+  playerId: string | null;
+  eventType: string;
+  email: string | null;
+  ipAddress: string | null;
+  ipCountry: string | null;
+  ipRegion: string | null;
+  ipCity: string | null;
+  userAgent: string | null;
+  referer: string | null;
+  acceptLanguage: string | null;
+  formCity: string | null;
+  detail: string | null;
+  createdAt: string;
+};
+
+export function listRegistrationAudit(season = CURRENT_SEASON) {
+  return adminFetch<RegistrationAuditRow[]>(`/api/v1/admin/seasons/${season}/registration-audit`);
 }
 
 export function approveRegistration(playerId: string, season = CURRENT_SEASON) {

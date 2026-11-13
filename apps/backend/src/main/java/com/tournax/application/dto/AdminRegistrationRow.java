@@ -13,6 +13,8 @@ public record AdminRegistrationRow(
     String city,
     String efootballUsername,
     String avatarUrl,
+    boolean emailVerified,
+    Instant emailVerifiedAt,
     boolean approved,
     Instant joinedAt
 ) {
@@ -27,6 +29,8 @@ public record AdminRegistrationRow(
             player.getCity(),
             player.getEfootballId(),
             player.getAvatarUrl(),
+            player.isEmailVerified(),
+            player.getEmailVerifiedAt(),
             entry.isApproved(),
             entry.getJoinedAt()
         );

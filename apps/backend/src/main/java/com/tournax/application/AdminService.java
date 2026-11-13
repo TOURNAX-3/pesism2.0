@@ -10,6 +10,7 @@ import com.tournax.domain.model.TournamentStatus;
 import com.tournax.domain.model.Player;
 import com.tournax.domain.repository.PlayerRepository;
 import com.tournax.domain.repository.TournamentPlayerRepository;
+import com.tournax.domain.model.RegistrationAuditEvent;
 import com.tournax.domain.repository.TournamentRepository;
 import java.time.Clock;
 import java.time.Instant;
@@ -25,17 +26,20 @@ public class AdminService {
     private final TournamentRepository tournamentRepository;
     private final TournamentPlayerRepository tournamentPlayerRepository;
     private final PlayerRepository playerRepository;
+    private final RegistrationAuditService registrationAuditService;
     private final Clock clock;
 
     public AdminService(
         TournamentRepository tournamentRepository,
         TournamentPlayerRepository tournamentPlayerRepository,
         PlayerRepository playerRepository,
+        RegistrationAuditService registrationAuditService,
         Clock clock
     ) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentPlayerRepository = tournamentPlayerRepository;
         this.playerRepository = playerRepository;
+        this.registrationAuditService = registrationAuditService;
         this.clock = clock;
     }
 
@@ -66,12 +70,21 @@ public class AdminService {
             .toList();
     }
 
+    public List<RegistrationAuditEvent> registrationAudit(int season) {
+        Tournament tournament = requireSeason(season);
+        return registrationAuditService.recentForTournament(tournament.getId());
+    }
+
     @Transactional
     public void approveRegistration(int season, UUID playerId) {
         Tournament tournament = requireSeason(season);
-        TournamentPlayer entry = tournamentPlayerRepository
-            .findById(new TournamentPlayerId(tournament.getId(), playerId))
-            .orElseThrow(() -> new IllegalArgumentException("Registration not found"));
+        TournamentPlayer entry =
+            tournamentPlayerRepository
+                .findById(new TournamentPlayerId(tournament.getId(), playerId))
+                .orElseThrow(() -> new IllegalArgumentException("Registration not found"));
+        if (!entry.getPlayer().isEmailVerified()) {
+            throw new IllegalArgumentException("Player has not verified their email yet.");
+        }
         entry.approve();
     }
 

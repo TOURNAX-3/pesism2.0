@@ -1,8 +1,13 @@
 {
-  "DATABASE_URL": "jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require",
+  "_comment": "Copy host from Supabase Dashboard → Connect → Session pooler (do not guess aws-0/aws-1). DATABASE_USER must be postgres.<ref>, never plain postgres, or pooler returns ENOIDENTIFIER.",
+  "DATABASE_URL": "jdbc:postgresql://PASTE_SESSION_POOLER_HOST:5432/postgres?sslmode=require&prepareThreshold=0&options=reference%3Dxjnovjmixytuxopzzrhd",
   "DATABASE_USER": "postgres.xjnovjmixytuxopzzrhd",
   "DATABASE_PASSWORD": "REPLACE_WITH_SUPABASE_DATABASE_PASSWORD",
   "ADMIN_API_KEY": "REPLACE_WITH_SAME_VALUE_AS_VERCEL_ADMIN_API_KEY",
   "CORS_ORIGINS": "https://YOUR_APP.vercel.app",
-  "JAVA_TOOL_OPTIONS": "-Djava.net.preferIPv4Stack=true"
+  "JAVA_TOOL_OPTIONS": "-Djava.net.preferIPv4Stack=true",
+  "BREVO_SMTP_LOGIN": "your-brevo-login@email.com",
+  "BREVO_SMTP_KEY": "REPLACE_WITH_BREVO_SMTP_KEY",
+  "MAIL_FROM": "TOURNAX <noreply@your-verified-domain.com>",
+  "MAIL_DELIVERY": "live"
 }

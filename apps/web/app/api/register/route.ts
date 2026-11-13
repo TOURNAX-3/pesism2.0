@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { registrationClientHeaders } from '@/lib/registration-client-headers';
 import { uploadPlayerAvatar } from '@/lib/supabase-server';
 
 const API_BASE = process.env.TOURNAX_API_URL ?? 'http://localhost:8080';
@@ -16,10 +17,10 @@ function readFields(form: FormData) {
   };
 }
 
-async function forwardRegistration(payload: Record<string, string>) {
+async function forwardRegistration(payload: Record<string, string>, clientHeaders: Record<string, string>) {
   const res = await fetch(`${API_BASE}/api/v1/seasons/${SEASON}/registration`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...clientHeaders },
     body: JSON.stringify(payload),
   });
   const data = await res.json().catch(() => ({}));
@@ -28,6 +29,7 @@ async function forwardRegistration(payload: Record<string, string>) {
 
 export async function POST(request: Request) {
   const contentType = request.headers.get('content-type') ?? '';
+  const clientHeaders = registrationClientHeaders(request);
 
   try {
     if (contentType.includes('multipart/form-data')) {
@@ -42,7 +44,7 @@ export async function POST(request: Request) {
         ...fields,
         ...(avatarUrl ? { avatarUrl } : {}),
       };
-      const { res, data } = await forwardRegistration(payload);
+      const { res, data } = await forwardRegistration(payload, clientHeaders);
       if (!res.ok) {
         return NextResponse.json(data, { status: res.status });
       }
@@ -67,7 +69,7 @@ export async function POST(request: Request) {
       website: body.website ?? '',
     };
 
-    const { res, data } = await forwardRegistration(payload);
+    const { res, data } = await forwardRegistration(payload, clientHeaders);
     if (!res.ok) {
       return NextResponse.json(data, { status: res.status });
     }

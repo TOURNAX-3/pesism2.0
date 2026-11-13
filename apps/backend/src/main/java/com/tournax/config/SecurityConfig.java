@@ -26,6 +26,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/seasons/*/registration")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/seasons/*/registration/*/verify/**")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/seasons/*/competition")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/seasons/*/grievances")

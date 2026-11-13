@@ -18,6 +18,17 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  mail:
+    host: ${MAIL_HOST:smtp-relay.brevo.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:${BREVO_SMTP_LOGIN:}}
+    password: ${MAIL_PASSWORD:${BREVO_SMTP_KEY:}}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
   port: ${PORT:8080}
@@ -27,5 +38,12 @@ tournax:
     allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
   registration:
     honeypot-field: website
+    otp-expiry-minutes: 30
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:TOURNAX <onboarding@resend.dev>}
+    resend-api-key: ${RESEND_API_KEY:}
+    # auto | live | console — auto sends for real when RESEND_API_KEY or SMTP is set
+    delivery: ${MAIL_DELIVERY:auto}
   admin:
     api-key: ${ADMIN_API_KEY:dev-admin-change-me}

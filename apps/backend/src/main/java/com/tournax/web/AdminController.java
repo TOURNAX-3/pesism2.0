@@ -1,6 +1,8 @@
 package com.tournax.web;
 
 import com.tournax.application.AdminService;
+import com.tournax.application.RegistrationAuditService;
+import com.tournax.application.dto.RegistrationAuditRow;
 import com.tournax.application.FairPlayAdminService;
 import com.tournax.application.GrievanceService;
 import com.tournax.application.FixtureAdminService;
@@ -43,19 +45,22 @@ public class AdminController {
     private final FixtureAdminService fixtureAdminService;
     private final FairPlayAdminService fairPlayAdminService;
     private final GrievanceService grievanceService;
+    private final RegistrationAuditService registrationAuditService;
 
     public AdminController(
         AdminService adminService,
         MatchAdminService matchAdminService,
         FixtureAdminService fixtureAdminService,
         FairPlayAdminService fairPlayAdminService,
-        GrievanceService grievanceService
+        GrievanceService grievanceService,
+        RegistrationAuditService registrationAuditService
     ) {
         this.adminService = adminService;
         this.matchAdminService = matchAdminService;
         this.fixtureAdminService = fixtureAdminService;
         this.fairPlayAdminService = fairPlayAdminService;
         this.grievanceService = grievanceService;
+        this.registrationAuditService = registrationAuditService;
     }
 
     @GetMapping("/dashboard")
@@ -66,6 +71,11 @@ public class AdminController {
     @GetMapping("/registrations")
     public List<AdminRegistrationRow> registrations(@PathVariable int season) {
         return adminService.listRegistrations(season);
+    }
+
+    @GetMapping("/registration-audit")
+    public List<RegistrationAuditRow> registrationAudit(@PathVariable int season) {
+        return adminService.registrationAudit(season).stream().map(RegistrationAuditRow::from).toList();
     }
 
     @PatchMapping("/registrations/{playerId}/avatar")

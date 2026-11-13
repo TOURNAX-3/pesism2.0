@@ -345,8 +345,10 @@ export function SiteInteractions() {
     const modal = $<HTMLElement>('#register');
     const dialog = modal ? $<HTMLElement>('.modal__dialog', modal) : null;
     const formView = modal ? $<HTMLElement>('[data-view="form"]', modal) : null;
+    const verifyView = modal ? $<HTMLElement>('[data-view="verify"]', modal) : null;
     const successView = modal ? $<HTMLElement>('[data-view="success"]', modal) : null;
     const form = formView ? $<HTMLFormElement>('form', formView) : null;
+    const verifyForm = verifyView ? $<HTMLFormElement>('.verify-form', verifyView) : null;
     const submitBtn = form ? $<HTMLButtonElement>('button[type="submit"]', form) : null;
 
     function registrationAllowed(): boolean {
@@ -414,38 +416,53 @@ export function SiteInteractions() {
       if (err) err.textContent = msg || '';
       $$<HTMLInputElement>('input', field).forEach(i => i.setAttribute('aria-invalid', msg ? 'true' : 'false'));
     }
+    function fieldControlIsValid(field: HTMLElement): { ok: boolean; control: HTMLElement | null; msgKey: string } {
+      const inputs = $$<HTMLInputElement>('input', field);
+      const select = $<HTMLSelectElement>('select', field);
+      if (select) {
+        const ok = select.checkValidity() && select.value.trim() !== '';
+        return { ok, control: select, msgKey: select.name };
+      }
+      if (!inputs.length) return { ok: true, control: null, msgKey: '' };
+      const fileInput = inputs.find(i => i.type === 'file');
+      const input = fileInput ?? inputs[0];
+      const ok =
+        input.type === 'radio'
+          ? inputs.some(i => i.checked)
+          : input.type === 'file'
+            ? input.files != null && input.files.length > 0
+            : input.checkValidity() && input.value.trim() !== '';
+      const msgKey = input.name === 'photo' ? 'photo' : input.name;
+      return { ok, control: input, msgKey };
+    }
+
     function validate(): boolean {
       if (!form) return false;
-      let firstBad: HTMLInputElement | null = null;
+      let firstBad: HTMLElement | null = null;
       $$<HTMLElement>('.field', form).forEach(field => {
-        const inputs = $$<HTMLInputElement>('input', field);
-        if (!inputs.length) return;
-        const fileInput = inputs.find(i => i.type === 'file');
-        const input = fileInput ?? inputs[0];
-        const ok =
-          input.type === 'radio'
-            ? inputs.some(i => i.checked)
-            : input.type === 'file'
-              ? input.files != null && input.files.length > 0
-              : input.checkValidity() && input.value.trim() !== '';
-        const msgKey = input.name === 'photo' ? 'photo' : input.name;
+        const { ok, control, msgKey } = fieldControlIsValid(field);
+        if (!control && ok) return;
         setError(field, ok ? '' : messages[msgKey] ?? 'This field is required.');
-        if (!ok && !firstBad) firstBad = input;
+        if (!ok && !firstBad && control) firstBad = control;
       });
-      if (firstBad) (firstBad as HTMLInputElement).focus();
+      if (firstBad) (firstBad as HTMLElement).focus();
       return !firstBad;
     }
     function resetForm() {
       if (!form || !submitBtn || !formView || !successView) return;
       if (submitTimer) clearTimeout(submitTimer);
       form.reset();
+      verifyForm?.reset();
       $$<HTMLElement>('.field', form).forEach(f => setError(f, ''));
+      if (verifyForm) $$<HTMLElement>('.field', verifyForm).forEach(f => setError(f, ''));
+      modal?.removeAttribute('data-pending-player-id');
       syncSubmitEnabled();
       if (registrationAllowed()) {
         const label = $<HTMLElement>('.btn__label', submitBtn);
-        if (label) label.textContent = 'Confirm registration';
+        if (label) label.textContent = 'Send verification code';
       }
       formView.hidden = false;
+      if (verifyView) verifyView.hidden = true;
       successView.hidden = true;
     }
 
@@ -453,14 +470,7 @@ export function SiteInteractions() {
       const target = e.target as HTMLElement;
       const field = target.closest<HTMLElement>('.field');
       if (field && field.classList.contains('has-error')) {
-        const inputs = $$<HTMLInputElement>('input', field);
-        const input = inputs[0];
-        const ok =
-          input.type === 'radio'
-            ? inputs.some(i => i.checked)
-            : input.type === 'file'
-              ? input.files != null && input.files.length > 0
-              : input.checkValidity() && input.value.trim() !== '';
+        const { ok } = fieldControlIsValid(field);
         if (ok) setError(field, '');
       }
     };
@@ -471,20 +481,25 @@ export function SiteInteractions() {
       tournament_full: 'All slots are full.',
       validation_error: 'Check the form and try again.',
       upload_error: 'Could not upload your photo. Check the file or try again.',
+      verification_failed: 'That code did not work. Try again or resend.',
+      email_send_failed: 'We could not send the verification email. Try again in a moment.',
     };
 
+    let registerSubmitting = false;
     const onFormSubmit = async (e: Event) => {
       e.preventDefault();
-      if (!validate() || !submitBtn || !formView || !successView || !form) return;
+      if (registerSubmitting) return;
+      if (!validate() || !submitBtn || !formView || !successView || !form || !verifyView) return;
       if (!registrationAllowed()) {
         const hint = modal?.getAttribute('data-registration-hint') ?? 'Registration is not open yet.';
         const firstField = $<HTMLElement>('.field', form);
         if (firstField) setError(firstField, hint);
         return;
       }
+      registerSubmitting = true;
       submitBtn.disabled = true;
       const label = $<HTMLElement>('.btn__label', submitBtn);
-      if (label) label.textContent = 'Registering…';
+      if (label) label.textContent = 'Sending code…';
 
       const data = new FormData(form);
       const photo = data.get('photo');
@@ -492,7 +507,8 @@ export function SiteInteractions() {
         const photoField = $<HTMLElement>('#f-photo')?.closest<HTMLElement>('.field');
         if (photoField) setError(photoField, 'Add a profile photo.');
         submitBtn.disabled = false;
-        if (label) label.textContent = 'Confirm registration';
+        if (label) label.textContent = 'Send verification code';
+        registerSubmitting = false;
         return;
       }
       try {
@@ -500,7 +516,12 @@ export function SiteInteractions() {
           method: 'POST',
           body: data,
         });
-        const body = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
+        const body = (await res.json().catch(() => ({}))) as {
+          code?: string;
+          message?: string;
+          playerId?: string;
+          emailVerificationRequired?: boolean;
+        };
         if (!res.ok) {
           const msg =
             body.message ??
@@ -509,23 +530,104 @@ export function SiteInteractions() {
           const targetField =
             body.code === 'upload_error'
               ? ($<HTMLElement>('#f-photo')?.closest<HTMLElement>('.field') ?? $<HTMLElement>('.field', form))
-              : $<HTMLElement>('.field', form);
+              : body.code === 'email_send_failed'
+                ? ($<HTMLElement>('#f-email')?.closest<HTMLElement>('.field') ?? $<HTMLElement>('.field', form))
+                : $<HTMLElement>('.field', form);
           if (targetField) setError(targetField, msg);
           submitBtn.disabled = false;
-          if (label) label.textContent = 'Confirm registration';
+          if (label) label.textContent = 'Send verification code';
+          registerSubmitting = false;
           return;
         }
         formView.hidden = true;
-        successView.hidden = false;
-        $<HTMLElement>('h2', successView)?.focus({ preventScroll: true });
+        if (body.emailVerificationRequired && body.playerId) {
+          const email = String(data.get('email') ?? '').trim();
+          const emailEl = $<HTMLElement>('[data-verify-email]', verifyView);
+          if (emailEl && email) emailEl.textContent = email;
+          modal?.setAttribute('data-pending-player-id', body.playerId);
+          verifyView.hidden = false;
+          successView.hidden = true;
+          setTimeout(() => $<HTMLInputElement>('#f-verify-code')?.focus({ preventScroll: true }), 80);
+        } else {
+          successView.hidden = false;
+          $<HTMLElement>('h2', successView)?.focus({ preventScroll: true });
+        }
       } catch {
         submitBtn.disabled = false;
-        if (label) label.textContent = 'Confirm registration';
+        if (label) label.textContent = 'Send verification code';
+      } finally {
+        registerSubmitting = false;
+      }
+    };
+
+    const onVerifySubmit = async (e: Event) => {
+      e.preventDefault();
+      if (!verifyForm || !verifyView || !successView || !modal) return;
+      const playerId = modal.getAttribute('data-pending-player-id');
+      if (!playerId) return;
+      const codeInput = $<HTMLInputElement>('#f-verify-code', verifyForm);
+      const code = codeInput?.value.trim() ?? '';
+      const field = $<HTMLElement>('.field', verifyForm);
+      if (!/^\d{4}$/.test(code)) {
+        if (field) setError(field, 'Enter the 4-digit code from your email.');
+        return;
+      }
+      const submitLabel = $<HTMLElement>('.verify__submit .btn__label');
+      if (submitLabel) submitLabel.textContent = 'Checking…';
+      try {
+        const res = await fetch('/api/register/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ playerId, code }),
+        });
+        const body = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
+        if (!res.ok) {
+          const msg = body.message ?? (body.code ? apiErrors[body.code] : undefined) ?? 'Verification failed.';
+          if (field) setError(field, msg);
+          if (submitLabel) submitLabel.textContent = 'Verify & finish registration';
+          return;
+        }
+        verifyView.hidden = true;
+        successView.hidden = false;
+        modal.removeAttribute('data-pending-player-id');
+        $<HTMLElement>('h2', successView)?.focus({ preventScroll: true });
+      } catch {
+        if (field) setError(field, 'Could not reach the server. Try again.');
+        if (submitLabel) submitLabel.textContent = 'Verify & finish registration';
+      }
+    };
+
+    const onVerifyResend = async () => {
+      if (!modal || !verifyForm) return;
+      const playerId = modal.getAttribute('data-pending-player-id');
+      if (!playerId) return;
+      const field = $<HTMLElement>('.field', verifyForm);
+      const resendBtn = $<HTMLButtonElement>('.verify__resend', verifyForm);
+      if (resendBtn) resendBtn.disabled = true;
+      try {
+        const res = await fetch('/api/register/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ playerId, resend: true }),
+        });
+        if (!res.ok) {
+          const body = (await res.json().catch(() => ({}))) as { message?: string };
+          if (field) setError(field, body.message ?? 'Could not resend. Wait a minute and try again.');
+        } else if (field) {
+          setError(field, '');
+          const err = $<HTMLElement>('.field__error', field);
+          if (err) err.textContent = 'New code sent. Check your inbox.';
+        }
+      } finally {
+        if (resendBtn) resendBtn.disabled = false;
       }
     };
 
     form?.addEventListener('input', onFormInput);
     form?.addEventListener('submit', onFormSubmit);
+    verifyForm?.addEventListener('submit', onVerifySubmit);
+    const resendBtn = verifyForm ? $<HTMLButtonElement>('.verify__resend', verifyForm) : null;
+    resendBtn?.addEventListener('click', onVerifyResend);
     const modalCloseBtn = modal ? $<HTMLButtonElement>('.modal__close', modal) : null;
     const successDoneBtn = modal ? $<HTMLButtonElement>('.success__done', modal) : null;
     modalCloseBtn?.addEventListener('click', closeModal);
@@ -607,6 +709,13 @@ export function SiteInteractions() {
     return () => {
       cancelled = true;
       cancelAnimationFrame(rafId);
+      form?.removeEventListener('input', onFormInput);
+      form?.removeEventListener('submit', onFormSubmit);
+      verifyForm?.removeEventListener('submit', onVerifySubmit);
+      resendBtn?.removeEventListener('click', onVerifyResend);
+      modalCloseBtn?.removeEventListener('click', closeModal);
+      successDoneBtn?.removeEventListener('click', closeModal);
+      modal?.removeEventListener('click', onModalBackdrop);
       document.removeEventListener('click', onDocClick);
       document.removeEventListener('keydown', onDocKeydown);
       stopScrollFx?.();

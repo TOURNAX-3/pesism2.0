@@ -423,6 +423,7 @@ ul{list-style:none;margin:0;padding:0}
 .photo-upload__hint{margin:0;font-size:.85rem;color:var(--muted-2);line-height:1.45;max-width:20rem}
 .field input::placeholder{color:var(--muted-2)}
 .field.has-error input,.field.has-error select,.field.has-error textarea{border-color:var(--danger)}
+.field__hint{margin:.2rem 0 0;font-size:.85rem;color:var(--muted-2);line-height:1.45}
 .field__error{font-size:.85rem;color:var(--danger-soft);min-height:0}
 fieldset.field{border:0;margin:0;padding:0;min-width:0}
 fieldset.field legend{padding:0;margin-bottom:.45rem}
@@ -519,6 +520,46 @@ fieldset.field legend{padding:0;margin-bottom:.45rem}
 }
 
 /* No .dark variant: the brand has one mode (the dark athletic-poster palette above), no light/dark toggle. */
+
+/* Rules & regulations */
+.rules-callout{padding-block:clamp(2.5rem,6vw,4rem)}
+.rules-callout__inner{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem 2rem;padding:1.75rem 1.75rem 2rem}
+.rules-callout__eyebrow{margin:0 0 .5rem;font-size:.75rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--green)}
+.rules-callout__title{margin:0;font-family:var(--font-headline);font-size:clamp(1.5rem,4vw,2rem);font-weight:var(--display-weight);text-transform:uppercase;line-height:1.1}
+.rules-callout__text{margin:.75rem 0 0;max-width:36rem;color:var(--muted-foreground);line-height:1.55;font-size:.95rem}
+.rules-page__wrap{max-width:52rem}
+.rules-page__intro{max-width:42rem}
+.rules-page__meta{margin:.75rem 0 0;font-size:.85rem;color:var(--muted-2);letter-spacing:.04em}
+.rules-doc{display:flex;flex-direction:column;gap:1.75rem;margin-top:2rem}
+.rules-doc__toc{padding:1.25rem 1.5rem}
+.rules-doc__toc-label{margin:0 0 .75rem;font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green)}
+.rules-doc__toc-list{margin:0;padding:0;list-style:none;display:grid;gap:.4rem}
+@media (min-width:640px){.rules-doc__toc-list{grid-template-columns:1fr 1fr}}
+.rules-doc__toc-list a{color:var(--white);font-size:.9rem;font-weight:600;text-decoration:none;border-bottom:1px solid transparent}
+.rules-doc__toc-list a:hover{color:var(--green);border-bottom-color:var(--line-2)}
+.rules-doc__sections{display:flex;flex-direction:column;gap:1.25rem}
+.rules-doc__section-head{flex-direction:column;align-items:flex-start;gap:.5rem;border-bottom:1px solid var(--line-2)}
+.rules-doc__num{font-family:var(--font-headline);font-size:2.5rem;line-height:1;color:var(--tag);opacity:.85}
+.rules-doc__section-title{margin:0;font-size:var(--fs-h3);font-weight:var(--display-weight);text-transform:uppercase;line-height:1.15}
+.rules-doc__body{padding:1.25rem 1.5rem 1.75rem;display:flex;flex-direction:column;gap:1.5rem}
+.rules-doc__h3{margin:0 0 .5rem;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--violet)}
+.rules-doc__p{margin:0 0 .85rem;color:var(--muted-foreground);line-height:1.6;font-size:.92rem}
+.rules-doc__p:last-child{margin-bottom:0}
+.rules-doc__keyfacts{padding:1.25rem 1.5rem;border-color:color-mix(in oklab,var(--green) 35%,var(--line))}
+.rules-doc__keyfacts-list{margin:.5rem 0 0;padding:0;list-style:none;display:grid;gap:.65rem}
+@media (min-width:640px){.rules-doc__keyfacts-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem 1.25rem}}
+.rules-doc__keyfacts-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);margin-bottom:.15rem}
+.rules-doc__keyfacts .rules-doc__hi{font-family:var(--font-headline);font-size:1.05rem;letter-spacing:.04em}
+.rules-doc__hi{color:var(--green);font-weight:var(--display-weight)}
+.rules-doc__rule{display:flex;gap:.75rem;align-items:flex-start;margin:0 0 1rem;color:var(--muted-foreground);font-size:.92rem;line-height:1.6}
+.rules-doc__rule-num{flex:none;min-width:2.35rem;font-weight:800;color:var(--green);font-size:.82rem;letter-spacing:.02em}
+.rules-doc__rule-text{flex:1;min-width:0}
+.rules-doc__list{margin:.25rem 0 0;padding-left:1.15rem;color:var(--muted-foreground);font-size:.92rem;line-height:1.6}
+.rules-doc__list li{margin-bottom:.75rem}
+.rules-doc__list li::marker{color:var(--green)}
+.rules-doc__ol{margin:.35rem 0 0;padding:0;list-style:none;counter-reset:rules-ol;color:var(--muted-foreground);font-size:.92rem;line-height:1.6}
+.rules-doc__ol li{counter-increment:rules-ol;display:flex;gap:.65rem;align-items:flex-start;margin-bottom:.75rem}
+.rules-doc__ol li::before{content:counter(rules-ol) ".";flex:none;min-width:1.35rem;font-weight:800;color:var(--green);font-size:.82rem}
 
 @layer base {
   * {

@@ -39,6 +39,7 @@ export async function RegisterModal() {
             <div className="field">
               <label htmlFor="f-gamer">Gaming username</label>
               <input id="f-gamer" name="gamer" type="text" autoComplete="nickname" required placeholder="ArjunFC" />
+              <p className="field__hint">No separate tag? Use the same name as your eFootball username below.</p>
               <span className="field__error" aria-live="polite"></span>
             </div>
             <div className="field">
@@ -73,8 +74,46 @@ export async function RegisterModal() {
             <div className="form__foot field--full">
               <p className="form__fine">One registration per person. Duplicate or bogus entries may be removed.</p>
               <Button className="btn btn--primary" type="submit" disabled={!open}>
-                <span className="btn__label">{open ? 'Confirm registration' : 'Registration not open yet'}</span>
+                <span className="btn__label">{open ? 'Send verification code' : 'Registration not open yet'}</span>
               </Button>
+            </div>
+          </form>
+        </div>
+
+        <div className="modal__view" data-view="verify" hidden>
+          <div className="modal__head">
+            <h2 className="modal__title">Verify your email</h2>
+            <p className="verify__intro">
+              We emailed a 4-digit code to{' '}
+              <strong className="verify__email" data-verify-email>
+                your address
+              </strong>
+              . Enter it below to complete registration.
+            </p>
+          </div>
+          <form className="form verify-form" noValidate>
+            <div className="field field--full">
+              <label htmlFor="f-verify-code">Verification code</label>
+              <input
+                id="f-verify-code"
+                name="code"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                pattern="[0-9]{4}"
+                maxLength={4}
+                required
+                placeholder="1234"
+              />
+              <span className="field__error" aria-live="polite"></span>
+            </div>
+            <div className="form__foot field--full">
+              <Button className="btn btn--primary verify__submit" type="submit">
+                <span className="btn__label">Verify &amp; finish registration</span>
+              </Button>
+              <button className="btn btn--ghost verify__resend" type="button">
+                Resend code
+              </button>
             </div>
           </form>
         </div>
@@ -84,7 +123,7 @@ export async function RegisterModal() {
             <Icon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" html={'<path d="m5 12.5 4.5 4.5L19 7.5"/>'} />
           </span>
           <h2 tabIndex={-1}>You&rsquo;re on the list!</h2>
-          <p>Thanks for registering. Now go back up what you&rsquo;ve been saying in the group.</p>
+          <p>Registration complete. An admin will approve your slot before you appear on the site.</p>
           <Button className="btn btn--primary success__done" type="button">Done</Button>
         </div>
       </div>
