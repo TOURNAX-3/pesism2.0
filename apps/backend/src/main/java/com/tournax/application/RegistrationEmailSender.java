@@ -18,6 +18,7 @@ public class RegistrationEmailSender {
 
     private final JavaMailSender mailSender;
     private final ResendEmailClient resend;
+    private final BrevoEmailClient brevo;
     private final boolean smtpEnabled;
     private final String brevoSmtpKey;
     private final String fromAddress;
@@ -26,6 +27,7 @@ public class RegistrationEmailSender {
     public RegistrationEmailSender(
         ObjectProvider<JavaMailSender> mailSender,
         ResendEmailClient resend,
+        BrevoEmailClient brevo,
         @Value("${tournax.mail.enabled:false}") boolean smtpEnabled,
         @Value("${BREVO_SMTP_KEY:}") String brevoSmtpKey,
         @Value("${tournax.mail.from:TOURNAX <noreply@tournax.local>}") String fromAddress,
@@ -33,6 +35,7 @@ public class RegistrationEmailSender {
     ) {
         this.mailSender = mailSender.getIfAvailable();
         this.resend = resend;
+        this.brevo = brevo;
         this.smtpEnabled = smtpEnabled;
         this.brevoSmtpKey = brevoSmtpKey == null ? "" : brevoSmtpKey.trim();
         this.fromAddress = fromAddress;
@@ -59,6 +62,12 @@ public class RegistrationEmailSender {
             return;
         }
 
+        if (brevo.isConfigured()) {
+            brevo.sendMultipart(fromAddress, toEmail, subject, plainText, html);
+            log.info("OTP email sent via Brevo API to {}", maskEmail(toEmail));
+            return;
+        }
+
         if (smtpConfigured() && mailSender != null) {
             try {
                 MimeMessage message = mailSender.createMimeMessage();
@@ -80,7 +89,7 @@ public class RegistrationEmailSender {
         }
 
         throw new EmailDeliveryException(
-            "Email delivery is not configured. Set BREVO_SMTP_LOGIN + BREVO_SMTP_KEY, RESEND_API_KEY, or MAIL_* SMTP."
+            "Email delivery is not configured. Set BREVO_API_KEY (recommended on Railway), RESEND_API_KEY, or BREVO_SMTP_*."
         );
     }
 
@@ -113,7 +122,9 @@ public class RegistrationEmailSender {
         if ("live".equals(deliveryMode)) {
             return false;
         }
-        return !resend.isConfigured() && !(smtpConfigured() && mailSender != null);
+        return !resend.isConfigured()
+            && !brevo.isConfigured()
+            && !(smtpConfigured() && mailSender != null);
     }
 
     private static String maskEmail(String email) {

@@ -58,14 +58,24 @@ Duplicates: unique phone, email, gaming name; admin removes junk at `/admin/play
 Flow:
 
 1. **Send verification code** — form saved in `registration_intents` (OTP hash in Postgres). **No player row yet.**
-2. User gets the 6-digit code in their inbox (Brevo SMTP).
+2. User gets the 4-digit code in their inbox (Brevo API, Resend, or SMTP).
 3. **Verify & finish** — API checks the code against `registration_intents`, then creates `players` + `tournament_players`.
 
 **Recommended — [Brevo](https://www.brevo.com)** (~300 emails/day on free tier). Copy [`.env.example`](./.env.example):
 
-1. Brevo → **SMTP & API** → create **SMTP key** (`xsmtpsib-…`).
-2. **Senders** → verify the from address (often your Brevo login email while testing).
-3. `apps/backend/.env`:
+**Railway / cloud API:** many hosts block outbound **SMTP** (`ConnectException` / hang on “Sending code…”). Use the **HTTP API**, not SMTP:
+
+1. Brevo → **SMTP & API** → **API keys** → create key (`xkeysib-…`).
+2. **Senders** → verify `MAIL_FROM`.
+3. Railway variables:
+
+```env
+BREVO_API_KEY=xkeysib-your-key
+MAIL_FROM=TOURNAX <verified-sender@yourdomain.com>
+MAIL_DELIVERY=live
+```
+
+**Local dev** can use SMTP instead:
 
 ```env
 BREVO_SMTP_LOGIN=you@gmail.com
@@ -73,7 +83,7 @@ BREVO_SMTP_KEY=xsmtpsib-your-key
 MAIL_FROM=TOURNAX <you@gmail.com>
 ```
 
-4. Restart `npm run api`.
+Restart `npm run api` after changes.
 
-Alternatives: `RESEND_API_KEY` (HTTP) or `MAIL_ENABLED=true` with any SMTP host.  
+Alternatives: `RESEND_API_KEY` (HTTP). SMTP on port 587 only when your network allows it.  
 Dev console-only: `MAIL_DELIVERY=console` and omit Brevo/Resend keys.
