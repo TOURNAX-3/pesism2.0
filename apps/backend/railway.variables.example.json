@@ -6,8 +6,8 @@
   "ADMIN_API_KEY": "REPLACE_WITH_SAME_VALUE_AS_VERCEL_ADMIN_API_KEY",
   "CORS_ORIGINS": "https://YOUR_APP.vercel.app",
   "JAVA_TOOL_OPTIONS": "-Djava.net.preferIPv4Stack=true",
-  "BREVO_SMTP_LOGIN": "your-brevo-login@email.com",
-  "BREVO_SMTP_KEY": "REPLACE_WITH_BREVO_SMTP_KEY",
+  "BREVO_API_KEY": "REPLACE_WITH_BREVO_V3_API_KEY_xkeysib",
   "MAIL_FROM": "TOURNAX <noreply@your-verified-domain.com>",
-  "MAIL_DELIVERY": "live"
+  "MAIL_DELIVERY": "live",
+  "_email_note": "Do not rely on BREVO_SMTP_* on Railway — outbound port 587 is blocked; use BREVO_API_KEY (HTTPS)."
 }

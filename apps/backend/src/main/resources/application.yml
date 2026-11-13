@@ -27,6 +27,9 @@ spring:
       mail:
         smtp:
           auth: true
+          connectiontimeout: 8000
+          timeout: 8000
+          writetimeout: 8000
           starttls:
             enable: true
 
@@ -43,6 +46,7 @@ tournax:
     enabled: ${MAIL_ENABLED:false}
     from: ${MAIL_FROM:TOURNAX <onboarding@resend.dev>}
     resend-api-key: ${RESEND_API_KEY:}
+    # Prefer BREVO_API_KEY on cloud hosts — outbound SMTP (587) is often blocked.
     # auto | live | console — auto sends for real when RESEND_API_KEY or SMTP is set
     delivery: ${MAIL_DELIVERY:auto}
   admin:
