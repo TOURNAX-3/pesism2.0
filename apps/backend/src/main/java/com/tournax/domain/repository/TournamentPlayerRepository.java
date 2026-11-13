@@ -16,6 +16,15 @@ public interface TournamentPlayerRepository extends JpaRepository<TournamentPlay
     @Query("select count(tp) from TournamentPlayer tp where tp.id.tournamentId = :tournamentId")
     long countByTournamentId(@Param("tournamentId") UUID tournamentId);
 
+  @Query(
+        """
+        select count(tp) from TournamentPlayer tp
+        join tp.player p
+        where tp.id.tournamentId = :tournamentId and p.emailVerifiedAt is not null
+        """
+    )
+    long countEmailVerifiedByTournamentId(@Param("tournamentId") UUID tournamentId);
+
     @Query(
         "select count(tp) from TournamentPlayer tp where tp.id.tournamentId = :tournamentId and tp.approved = true"
     )

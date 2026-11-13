@@ -47,6 +47,7 @@ export default async function AdminPlayersPage() {
                   <TableHead>City</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead>Email verified</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead aria-label="Actions" />
                 </TableRow>
@@ -67,6 +68,11 @@ export default async function AdminPlayersPage() {
                     <TableCell>{row.city}</TableCell>
                     <TableCell>{row.email}</TableCell>
                     <TableCell className="admin-mono">{row.waNumber}</TableCell>
+                    <TableCell>
+                      <Badge variant={row.emailVerified ? 'default' : 'secondary'}>
+                        {row.emailVerified ? 'Verified' : 'Unverified'}
+                      </Badge>
+                    </TableCell>
                     <TableCell>
                       <Badge variant={row.approved ? 'default' : 'secondary'}>
                         {row.approved ? 'Approved' : 'Pending'}

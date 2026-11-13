@@ -6,6 +6,7 @@ const NAV_LINKS = [
   { href: '/#matchday', label: 'Matchday' },
   { href: '/#format', label: 'Format' },
   { href: '/#standings', label: 'Table' },
+  { href: '/fixtures', label: 'Fixtures' },
   { href: '/#players', label: 'Players' },
 ];
 

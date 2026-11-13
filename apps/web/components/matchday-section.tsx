@@ -112,7 +112,7 @@ function LastSeason({ recap }: { recap: LastSeasonRecap | null }) {
     <section className="section matchday" id="matchday" aria-labelledby="matchday-title">
       <div className="container">
         <div className="section__head">
-          <p className="matchday__eyebrow">PESISM 1.0 · Final whistle</p>
+          <p className="matchday__eyebrow">PESISM 2.0 · Final whistle</p>
           <SplitHeading
             id="matchday-title"
             lines={recap ? [recap.champion, 'took the crown.'] : ['The crown is', 'still unclaimed.']}

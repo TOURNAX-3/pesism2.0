@@ -29,6 +29,18 @@ The `sb_secret_` key is **not** the database password.
    ```
 4. `apps/web/.env.local` — same `ADMIN_API_KEY`, `TOURNAX_API_URL=http://localhost:8080`, Supabase URL/keys (already set).
 
+## Railway (shared session pooler)
+
+Railway is IPv4-only toward Supabase — use **Session pooler** from the Supabase **Connect** dialog, not the direct `db.<ref>.supabase.co` host.
+
+| Variable | Rule |
+|----------|------|
+| `DATABASE_URL` | JDBC host only: `jdbc:postgresql://<pooler-host>:5432/postgres?sslmode=require&prepareThreshold=0&options=reference%3D<ref>` — paste `<pooler-host>` and `<ref>` from Connect. |
+| `DATABASE_USER` | **`postgres.<ref>`** (e.g. `postgres.xjnovjmixytuxopzzrhd`). Plain `postgres` causes **`ENOIDENTIFIER` no tenant identifier**. |
+| `DATABASE_PASSWORD` | Database password (not `sb_secret_`). Keep out of the URL. |
+
+Local dev can keep direct host + `DATABASE_USER=postgres` (see `apps/backend/.env`).
+
 ## ddl-auto
 
 Keep **`spring.jpa.hibernate.ddl-auto=validate`**. Schema changes go in `apps/backend/src/main/resources/db/migration/` as new `V6__…sql` files. Do **not** use `update` with Flyway.

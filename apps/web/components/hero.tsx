@@ -51,6 +51,9 @@ export async function Hero() {
               <a className="btn--text" href="#standings">
                 See the table
               </a>
+              <a className="btn--text" href="/rules">
+                Rules &amp; regulations
+              </a>
             </div>
           </div>
 

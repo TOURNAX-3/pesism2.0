@@ -37,6 +37,9 @@ public class Player {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "email_verified_at")
+    private Instant emailVerifiedAt;
+
     @Column(name = "is_admin", nullable = false)
     private boolean admin;
 
@@ -118,5 +121,17 @@ public class Player {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public Instant getEmailVerifiedAt() {
+        return emailVerifiedAt;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerifiedAt != null;
+    }
+
+    public void markEmailVerified(Instant at) {
+        this.emailVerifiedAt = at;
     }
 }

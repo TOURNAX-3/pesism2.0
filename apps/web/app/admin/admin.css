@@ -213,6 +213,21 @@
   color: var(--color-accent, #ded002);
 }
 
+.admin-table-scroll {
+  overflow-x: auto;
+}
+
+.admin-nowrap {
+  white-space: nowrap;
+}
+
+.admin-table-truncate {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .admin-field span {
   display: block;
   font-size: 0.75rem;

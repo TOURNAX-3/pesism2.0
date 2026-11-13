@@ -48,5 +48,32 @@ Health: `GET http://localhost:8080/api/v1/health`
 |--------|------|
 | `GET` | `/api/v1/seasons/{season}/registration` |
 | `POST` | `/api/v1/seasons/{season}/registration` |
+| `POST` | `/api/v1/seasons/{season}/registration/{playerId}/verify` |
+| `POST` | `/api/v1/seasons/{season}/registration/{playerId}/verify/resend` |
 
-Duplicates: unique phone, email, gaming name; admin removes junk at `/admin/players`.
+Duplicates: unique phone, email, gaming name; admin removes junk at `/admin/players`. New sign-ups must pass **email OTP** before they count toward `max_players` or can be approved.
+
+## Email OTP (Brevo → DB → register)
+
+Flow:
+
+1. **Send verification code** — form saved in `registration_intents` (OTP hash in Postgres). **No player row yet.**
+2. User gets the 6-digit code in their inbox (Brevo SMTP).
+3. **Verify & finish** — API checks the code against `registration_intents`, then creates `players` + `tournament_players`.
+
+**Recommended — [Brevo](https://www.brevo.com)** (~300 emails/day on free tier). Copy [`.env.example`](./.env.example):
+
+1. Brevo → **SMTP & API** → create **SMTP key** (`xsmtpsib-…`).
+2. **Senders** → verify the from address (often your Brevo login email while testing).
+3. `apps/backend/.env`:
+
+```env
+BREVO_SMTP_LOGIN=you@gmail.com
+BREVO_SMTP_KEY=xsmtpsib-your-key
+MAIL_FROM=TOURNAX <you@gmail.com>
+```
+
+4. Restart `npm run api`.
+
+Alternatives: `RESEND_API_KEY` (HTTP) or `MAIL_ENABLED=true` with any SMTP host.  
+Dev console-only: `MAIL_DELIVERY=console` and omit Brevo/Resend keys.

@@ -32,6 +32,7 @@ export function Footer() {
             <ul>
               <li><a href="/#players">Players</a></li>
               <li><a href="/grievances">Grievances</a></li>
+              <li><a href="/rules">Rules &amp; regulations</a></li>
               <li><a href="mailto:hello@example.com">Contact</a></li>
             </ul>
           </nav>
@@ -49,8 +50,8 @@ export function Footer() {
         <div className="footer__bar">
           <span>© 2026 TOURNAX. eFootball™ is a trademark of KONAMI; TOURNAX is an independent community tournament.</span>
           <nav aria-label="Legal">
+            <a href="/rules">Rules &amp; regulations</a>
             <a href="#privacy">Privacy Policy</a>
-            <a href="#terms">Terms &amp; Conditions</a>
           </nav>
         </div>
       </div>

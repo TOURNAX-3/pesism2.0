@@ -1,6 +1,8 @@
 package com.tournax.web;
 
 import com.tournax.application.exception.AlreadyRegisteredException;
+import com.tournax.application.exception.EmailDeliveryException;
+import com.tournax.application.exception.EmailVerificationException;
 import com.tournax.application.exception.IdentityConflictException;
 import com.tournax.application.exception.RegistrationClosedException;
 import com.tournax.application.exception.TournamentFullException;
@@ -51,5 +53,16 @@ public class ApiExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> badRequest(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponse("bad_request", ex.getMessage()));
+    }
+
+    @ExceptionHandler(EmailVerificationException.class)
+    public ResponseEntity<ErrorResponse> emailVerification(EmailVerificationException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponse("verification_failed", ex.getMessage()));
+    }
+
+    @ExceptionHandler(EmailDeliveryException.class)
+    public ResponseEntity<ErrorResponse> emailDelivery(EmailDeliveryException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+            .body(new ErrorResponse("email_send_failed", ex.getMessage()));
     }
 }

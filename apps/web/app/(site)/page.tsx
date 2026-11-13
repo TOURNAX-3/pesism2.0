@@ -1,4 +1,5 @@
 import { Cta } from '@/components/cta';
+import { RulesCallout } from '@/components/rules-callout';
 import { Format } from '@/components/format';
 import { Hero } from '@/components/hero';
 import { MatchdaySection } from '@/components/matchday-section';
@@ -16,6 +17,7 @@ export default function Home() {
       <StandingsSection />
       <PlayersCarousel />
       <Cta />
+      <RulesCallout />
     </>
   );
 }
