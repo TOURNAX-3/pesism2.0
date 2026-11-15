@@ -39,6 +39,8 @@ export function LeagueTable({
   playerCrests,
   movement,
   showGoals = true,
+  group,
+  markers,
 }: {
   rows: StandingRow[];
   qualifiers: number;
@@ -47,11 +49,24 @@ export function LeagueTable({
   movement?: Record<string, Movement> | null;
   /** Goals for/against columns — the public site shows them; the admin table skips them to keep the card narrow. */
   showGoals?: boolean;
+  /** Renders a "Group {letter}" header above the table when set. */
+  group?: 'A' | 'B';
+  /** 'group' swaps the single qualifiers divider/colour for the group-stage layout: a solid
+   * quarter-finals line after 3rd, a dashed qualifiers line after 5th, and three position-colour
+   * tiers instead of two. */
+  markers?: 'group';
 }) {
-  const showDivider = rows.length > qualifiers;
+  const isGroupMarkers = markers === 'group';
+  const showDivider = !isGroupMarkers && rows.length > qualifiers;
 
   return (
-    <div className={`ltable${showGoals ? '' : ' ltable--no-goals'}`}>
+    <>
+      {group ? (
+        <div className="card__head">
+          <h3>Group {group}</h3>
+        </div>
+      ) : null}
+      <div className={`ltable${showGoals ? '' : ' ltable--no-goals'}`}>
       <div className="ltable-header">
         <span>#</span>
         <span aria-hidden="true" />
@@ -73,6 +88,18 @@ export function LeagueTable({
         const leader = pos === 1;
         const crest = playerCrests?.[row.playerId];
         const teamName = crest?.teamName ?? null;
+        const posClass = isGroupMarkers
+          ? pos <= 3
+            ? 'ltable-pos--q'
+            : pos <= 5
+              ? 'ltable-pos--mid'
+              : 'ltable-pos--out'
+          : qualifiers >= rows.length
+            // No real qualification cutoff (e.g. the "Overall" table) — plain, unmarked positions.
+            ? 'ltable-pos--nq'
+            : qualifies
+              ? 'ltable-pos--q'
+              : 'ltable-pos--nq';
 
         return (
           <div key={row.playerId}>
@@ -83,8 +110,22 @@ export function LeagueTable({
                 <span className="ltable-divider__line" aria-hidden="true" />
               </div>
             ) : null}
-            <div className={`ltable-row${leader ? ' ltable-row--leader' : ''}${!qualifies ? ' ltable-row--below' : ''}`}>
-              <span className={`ltable-pos ${qualifies ? 'ltable-pos--q' : 'ltable-pos--nq'}`}>
+            {isGroupMarkers && rows.length > 3 && pos === 4 ? (
+              <div className="ltable-divider ltable-divider--qf">
+                <span className="ltable-divider__line" aria-hidden="true" />
+                <span className="ltable-divider__label">QUARTER-FINALS</span>
+                <span className="ltable-divider__line" aria-hidden="true" />
+              </div>
+            ) : null}
+            {isGroupMarkers && rows.length > 5 && pos === 6 ? (
+              <div className="ltable-divider ltable-divider--qual">
+                <span className="ltable-divider__line" aria-hidden="true" />
+                <span className="ltable-divider__label">QUALIFIERS</span>
+                <span className="ltable-divider__line" aria-hidden="true" />
+              </div>
+            ) : null}
+            <div className={`ltable-row${leader ? ' ltable-row--leader' : ''}${!isGroupMarkers && !qualifies ? ' ltable-row--below' : ''}`}>
+              <span className={`ltable-pos ${posClass}`}>
                 {String(pos).padStart(2, '0')}
               </span>
               <span className="ltable-move">
@@ -109,6 +150,7 @@ export function LeagueTable({
           </div>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 }

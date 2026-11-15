@@ -66,7 +66,7 @@ class TeamServiceTest {
         when(tournamentPlayerRepository.findById(new TournamentPlayerId(tournamentId, playerId)))
             .thenReturn(Optional.of(entry));
 
-        TeamRow row = teamService.updateTeam(3, playerId, new UpdateTeamRequest("New Name", null));
+        TeamRow row = teamService.updateTeam(3, playerId, new UpdateTeamRequest("New Name", null, null));
 
         assertEquals("New Name", row.teamName());
     }
@@ -80,7 +80,7 @@ class TeamServiceTest {
 
         assertThrows(
             IllegalArgumentException.class,
-            () -> teamService.updateTeam(3, playerId, new UpdateTeamRequest("   ", null))
+            () -> teamService.updateTeam(3, playerId, new UpdateTeamRequest("   ", null, null))
         );
     }
 
@@ -91,7 +91,7 @@ class TeamServiceTest {
         when(tournamentPlayerRepository.findById(new TournamentPlayerId(tournamentId, playerId)))
             .thenReturn(Optional.of(entry));
 
-        TeamRow row = teamService.updateTeam(3, playerId, new UpdateTeamRequest(null, "https://x/crest.png"));
+        TeamRow row = teamService.updateTeam(3, playerId, new UpdateTeamRequest(null, "https://x/crest.png", null));
 
         assertEquals("https://x/crest.png", row.crestUrl());
         assertEquals(true, row.hasCrest());

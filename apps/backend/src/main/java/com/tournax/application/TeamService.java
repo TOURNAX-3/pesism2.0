@@ -62,6 +62,9 @@ public class TeamService {
         if (body.crestUrl() != null) {
             entry.setCrest(body.crestUrl().isBlank() ? null : body.crestUrl().trim());
         }
+        if (body.groupLetter() != null) {
+            entry.setGroupLetter(body.groupLetter().isBlank() ? null : body.groupLetter().trim());
+        }
         tournamentPlayerRepository.save(entry);
 
         var after = toRow(entry);
@@ -83,7 +86,8 @@ public class TeamService {
             player.getAvatarUrl(),
             tp.getTeamName(),
             tp.getCrestUrl(),
-            tp.getCrestUrl() != null
+            tp.getCrestUrl() != null,
+            tp.getGroupLetter()
         );
     }
 

@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { computeStandings } from '@tournax/core';
+import { computeStandings, rankGroup, type StandingRow } from '@tournax/core';
 import { fetchRegistrationWindow, registrationWindowSummary, spotsLabel } from '@/lib/registration-window';
 import {
   fetchSeasonCompetition,
@@ -10,7 +10,7 @@ import {
   type SeasonPlayer,
 } from '@/lib/season-competition';
 import type { TournamentStatusValue } from '@/lib/tournax-api';
-import { computeMovement, isCountedMatch, latestPlayedMatchday, matchdayChipsByNumber } from '@/lib/matchday-status';
+import { isCountedMatch, matchdayChipsByNumber } from '@/lib/matchday-status';
 import { computeLastSeasonRecap, type LastSeasonRecap } from '@/lib/last-season';
 import { avatarSvg } from '@/lib/avatar';
 import { fallbackPaletteFor } from '@/lib/crest';
@@ -63,6 +63,19 @@ function toSide(byId: Map<string, SeasonPlayer>, playerNames: Record<string, str
     teamName: p?.teamName ?? null,
     crestUrl: p?.crestUrl ?? null,
   };
+}
+
+/**
+ * A group's standings: every group member's stats are aggregated from ALL of their matches
+ * (including cross-group ones), but only that group's players are listed, ranked with the
+ * group-stage tie-break order (rankGroup), not the league's own tie-break order.
+ */
+function groupStandings(competition: SeasonCompetition, letter: 'A' | 'B'): StandingRow[] {
+  const groupIds = new Set(competition.players.filter((p) => p.groupLetter === letter).map((p) => p.id));
+  const allIds = competition.players.map((p) => p.id);
+  const allRows = computeStandings(allIds, competition.matches, competition.points);
+  const rows = allRows.filter((r) => groupIds.has(r.playerId));
+  return rankGroup(rows, competition.matches, competition.points);
 }
 
 function formatCountdown(deadlineIso: string | null): string | null {
@@ -197,9 +210,8 @@ async function LeaguePhase({ competition, overrideMatchday }: { competition: Sea
   const countdown = selectedMd === competition.currentMatchday ? formatCountdown(competition.currentMatchdayDeadlineAt) : null;
 
   const playerIds = competition.players.map((p) => p.id);
-  const table = competition.hasResults ? computeStandings(playerIds, competition.matches, competition.points) : [];
-  const movement = competition.hasResults ? computeMovement(playerIds, competition.matches, competition.points) : null;
-  const afterMatchday = competition.hasResults ? latestPlayedMatchday(competition.matches) : null;
+  const groupA = competition.hasResults ? groupStandings(competition, 'A') : [];
+  const groupB = competition.hasResults ? groupStandings(competition, 'B') : [];
   const playerCrests = Object.fromEntries(
     competition.players.map((p) => [
       p.id,
@@ -253,25 +265,33 @@ async function LeaguePhase({ competition, overrideMatchday }: { competition: Sea
           </div>
         )}
 
-        {table.length ? (
-          <div className="card" style={{ marginTop: '1.5rem' }} data-reveal>
-            <div className="card__head">
-              <div className="card__head-title">
-                <h3>League table</h3>
-                {afterMatchday ? <span className="card__head-eyebrow">After matchday {afterMatchday}</span> : null}
+        {groupA.length || groupB.length ? (
+          <div className="group-tables" style={{ marginTop: '1.5rem' }}>
+            <div className="card" data-reveal>
+              <LeagueTable
+                rows={groupA}
+                qualifiers={competition.knockoutQualifiers}
+                playerNames={competition.playerNames}
+                playerCrests={playerCrests}
+                group="A"
+                markers="group"
+              />
+              <div className="card__foot">
+                <a href="/table">See the full table &rarr;</a>
               </div>
-              <span className="pill pill--live">Live</span>
             </div>
-            <LeagueTable
-              rows={table}
-              qualifiers={competition.knockoutQualifiers}
-              playerNames={competition.playerNames}
-              playerCrests={playerCrests}
-              movement={movement}
-            />
-            <div className="card__foot">
-              <span>Top {competition.knockoutQualifiers} make the quarter-finals</span>
-              <a href="/table">See the full table &rarr;</a>
+            <div className="card" data-reveal>
+              <LeagueTable
+                rows={groupB}
+                qualifiers={competition.knockoutQualifiers}
+                playerNames={competition.playerNames}
+                playerCrests={playerCrests}
+                group="B"
+                markers="group"
+              />
+              <div className="card__foot">
+                <a href="/table">See the full table &rarr;</a>
+              </div>
             </div>
           </div>
         ) : null}

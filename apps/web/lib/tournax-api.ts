@@ -334,11 +334,13 @@ export type TeamRow = {
   teamName: string | null;
   crestUrl: string | null;
   hasCrest: boolean;
+  groupLetter: string | null;
 };
 
 export type UpdateTeamBody = {
   teamName?: string;
   crestUrl?: string;
+  groupLetter?: string;
 };
 
 export function listTeams(season = CURRENT_SEASON) {

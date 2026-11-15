@@ -62,7 +62,8 @@ public class CompetitionService {
                     tp.getPlayer().getCity(),
                     tp.getPlayer().getAvatarUrl(),
                     tp.getTeamName(),
-                    tp.getCrestUrl()
+                    tp.getCrestUrl(),
+                    tp.getGroupLetter()
                 ))
                 .toList();
 

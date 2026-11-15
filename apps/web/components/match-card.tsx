@@ -43,7 +43,7 @@ export function matchStatusChip(status: MatchStatus): { label: string; className
   }
 }
 
-function footerLine(match: MatchCardMatch, home: MatchCardSide, away: MatchCardSide): string | null {
+export function footerLine(match: MatchCardMatch, home: MatchCardSide, away: MatchCardSide): string | null {
   switch (match.status) {
     case 'scheduled':
       return match.deadline ? `Deadline: ${formatMatchdayDeadline(match.deadline)}` : null;
@@ -68,7 +68,17 @@ function hexWithAlpha(hex: string | null, alphaHex: string): string | undefined 
   return `${hex}${alphaHex}`;
 }
 
-function Side({ side, muted, role }: { side: MatchCardSide; muted: boolean; role: 'home' | 'away' }) {
+export function Side({
+  side,
+  muted,
+  role,
+  size = 64,
+}: {
+  side: MatchCardSide;
+  muted: boolean;
+  role: 'home' | 'away';
+  size?: number;
+}) {
   return (
     <div
       className="match-card__side"
@@ -76,7 +86,7 @@ function Side({ side, muted, role }: { side: MatchCardSide; muted: boolean; role
       data-side={role}
     >
       <span className="match-card__role">{role === 'home' ? 'Home' : 'Away'}</span>
-      <TeamCrest teamName={side.teamName} crestUrl={side.crestUrl} size={64} className="match-card__crest" />
+      <TeamCrest teamName={side.teamName} crestUrl={side.crestUrl} size={size} className="match-card__crest" />
       <p className="match-card__team">{side.teamName ?? 'Team pending'}</p>
       <div className="match-card__player">
         {side.avatarUrl ? (

@@ -8,5 +8,6 @@ public record TeamRow(
     String avatarUrl,
     String teamName,
     String crestUrl,
-    boolean hasCrest
+    boolean hasCrest,
+    String groupLetter
 ) {}

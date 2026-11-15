@@ -68,6 +68,42 @@ function headToHead(a: PlayerId, b: PlayerId, matches: Match[], points: PointsRu
   return pa - pb;
 }
 
+/** Positive when `a` has the better goal difference than `b` across their direct matches. */
+function headToHeadGoalDiff(a: PlayerId, b: PlayerId, matches: Match[]): number {
+  let gdA = 0, gdB = 0;
+  for (const m of matches) {
+    const isAB = m.homeId === a && m.awayId === b;
+    const isBA = m.homeId === b && m.awayId === a;
+    if (!isAB && !isBA) continue;
+    const ga = isAB ? m.homeGoals! : m.awayGoals!;
+    const gb = isAB ? m.awayGoals! : m.homeGoals!;
+    gdA += ga - gb;
+    gdB += gb - ga;
+  }
+  return gdA - gdB;
+}
+
+/**
+ * Re-ranks already-computed standing rows using the group-stage tie-break order from the
+ * official rulebook: points, goals scored, goals conceded (fewer is better), head-to-head
+ * points between the tied players, then head-to-head goal difference between them.
+ * `rows` is expected to come from `computeStandings` (or a subset of it) — this only re-sorts,
+ * it never recomputes played/won/drawn/goals from `matches`.
+ */
+export function rankGroup(rows: StandingRow[], matches: Match[], points: PointsRule = DEFAULT_POINTS): StandingRow[] {
+  const counted = matches.filter(m => COUNTS_IN_TABLE.has(m.status) && m.homeGoals !== null && m.awayGoals !== null);
+  const table = [...rows];
+  table.sort((a, b) =>
+    b.points - a.points ||
+    b.goalsFor - a.goalsFor ||
+    a.goalsAgainst - b.goalsAgainst ||
+    headToHead(b.playerId, a.playerId, counted, points) ||
+    headToHeadGoalDiff(b.playerId, a.playerId, counted) ||
+    a.playerId.localeCompare(b.playerId),
+  );
+  return table;
+}
+
 /**
  * Top scorer leaderboard: total goals each participant scored in counted matches.
  * Assumption to confirm with the organiser: "top scorer" means the participant, not an in game footballer.

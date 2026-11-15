@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { roundRobin, computeStandings, topScorers, parseScoreCommand, normaliseNumber, type Match } from '../src/index.ts';
+import { roundRobin, computeStandings, rankGroup, topScorers, parseScoreCommand, normaliseNumber, type Match, type StandingRow } from '../src/index.ts';
 
 test('round robin: everyone meets everyone exactly once', () => {
   const players = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -59,6 +59,31 @@ test('standings: head to head breaks a full tie', () => {
   const b = table.findIndex(r => r.playerId === 'b');
   assert.equal(table[a]!.points, table[b]!.points);
   assert.ok(a < b);
+});
+
+test('rankGroup: goals conceded outranks goal difference (group tie-break differs from the league order)', () => {
+  // Same points for both. a has the worse goal difference (+2 vs +3) but more goals scored
+  // (5 vs 4) and rankGroup checks goals scored before conceded/goal-difference, so a ranks first —
+  // the opposite of what computeStandings's points/goalDiff/goalsFor order would produce.
+  const rows: StandingRow[] = [
+    { playerId: 'a', played: 2, won: 1, drawn: 1, lost: 0, goalsFor: 5, goalsAgainst: 3, goalDiff: 2, points: 4, form: [] },
+    { playerId: 'b', played: 2, won: 1, drawn: 1, lost: 0, goalsFor: 4, goalsAgainst: 1, goalDiff: 3, points: 4, form: [] },
+  ];
+  const ranked = rankGroup(rows, []);
+  assert.deepEqual(ranked.map(r => r.playerId), ['a', 'b']);
+});
+
+test('rankGroup: head-to-head points tied, falls through to head-to-head goal difference', () => {
+  // Equal points, goals for and goals against overall. Across their own two meetings a and b
+  // split the points evenly (one win each), so head-to-head points also tie — the decider is
+  // head-to-head goal difference: a is +2 (won 3-0, lost 0-1), b is -2.
+  const rows: StandingRow[] = [
+    { playerId: 'a', played: 2, won: 1, drawn: 0, lost: 1, goalsFor: 4, goalsAgainst: 2, goalDiff: 2, points: 3, form: [] },
+    { playerId: 'b', played: 2, won: 1, drawn: 0, lost: 1, goalsFor: 4, goalsAgainst: 2, goalDiff: 2, points: 3, form: [] },
+  ];
+  const matches = [m('1', 1, 'a', 'b', 3, 0), m('2', 2, 'b', 'a', 1, 0)];
+  const ranked = rankGroup(rows, matches);
+  assert.deepEqual(ranked.map(r => r.playerId), ['a', 'b']);
 });
 
 test('top scorers counts goals from counted matches only', () => {

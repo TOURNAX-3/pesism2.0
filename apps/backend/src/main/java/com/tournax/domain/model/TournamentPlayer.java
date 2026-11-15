@@ -9,6 +9,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "tournament_players")
@@ -38,6 +40,10 @@ public class TournamentPlayer {
 
     @Column(name = "crest_url")
     private String crestUrl;
+
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(name = "group_letter", columnDefinition = "char(1)")
+    private String groupLetter;
 
     protected TournamentPlayer() {}
 
@@ -82,6 +88,10 @@ public class TournamentPlayer {
         return crestUrl;
     }
 
+    public String getGroupLetter() {
+        return groupLetter;
+    }
+
     /** Admin path — always allowed, no phase lock. */
     public void setTeamName(String teamName) {
         this.teamName = teamName;
@@ -89,5 +99,9 @@ public class TournamentPlayer {
 
     public void setCrest(String crestUrl) {
         this.crestUrl = crestUrl;
+    }
+
+    public void setGroupLetter(String groupLetter) {
+        this.groupLetter = groupLetter;
     }
 }

@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const CREST_ACCEPT = 'image/png,image/jpeg,image/webp,image/svg+xml,image/heic,image/heif';
 
@@ -71,7 +72,20 @@ function useTeamRowState(row: TeamRow) {
     }
   }
 
-  return { fileRef, teamName, setTeamName, busy, error, saveTeamName, onCrestFile, removeCrest };
+  async function saveGroup(groupLetter: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      await updateTeamAction(row.playerId, { groupLetter });
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not save the group.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return { fileRef, teamName, setTeamName, busy, error, saveTeamName, onCrestFile, removeCrest, saveGroup };
 }
 
 function PlayerAvatar({ row }: { row: TeamRow }) {
@@ -160,6 +174,16 @@ function TeamCard({ row }: { row: TeamRow }) {
             Save
           </Button>
         </div>
+
+        <Select value={row.groupLetter ?? undefined} onValueChange={state.saveGroup} disabled={state.busy}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Assign group" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="A">Group A</SelectItem>
+            <SelectItem value="B">Group B</SelectItem>
+          </SelectContent>
+        </Select>
 
         {state.error ? <p className="text-xs text-destructive">{state.error}</p> : null}
       </CardContent>

@@ -18,6 +18,15 @@ export default function RulesPage() {
           <p className="rules-page__meta">
             Key scores, points and time limits are <span className="rules-doc__hi">highlighted</span> throughout.
           </p>
+          <a
+            className="btn btn--ghost"
+            href="/docs/tournax-pesism-2.0-official-format.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ alignSelf: 'flex-start' }}
+          >
+            View the official format document (PDF)
+          </a>
         </header>
         <RulesDocument />
       </div>

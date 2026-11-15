@@ -145,7 +145,7 @@ ul{list-style:none;margin:0;padding:0}
 
 .card__head,.panel__head{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;padding:.875rem 1.25rem;border-bottom:1px solid var(--line-hairline)}
 .card__head-title{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap}
-.card__head h3,.panel__head h3{font-family:var(--font-headline);font-size:1.5rem;font-weight:400;line-height:1;letter-spacing:var(--tracking-headline);text-transform:none}
+.card__head h3,.panel__head h3{font-family:var(--font-headline);font-size:1.5rem;font-weight:400;line-height:1;letter-spacing:var(--tracking-headline);text-transform:none;transform:translateY(-4px)}
 .card__head-eyebrow{font-size:.75rem;font-weight:800;letter-spacing:.16em;color:var(--muted-2);text-transform:uppercase}
 .card__foot,.panel__foot{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem;padding:.875rem 1.25rem;border-top:1px solid var(--line-hairline);background:rgba(var(--color-paper-rgb),.35);font-size:.82rem;color:var(--color-ink-2)}
 .card__foot a,.card__foot-cta,.panel__foot a{font-weight:700;color:var(--green);text-decoration:none}
@@ -298,6 +298,17 @@ ul{list-style:none;margin:0;padding:0}
 .player-match__who{color:var(--muted-foreground)}
 .player-match__score{font-weight:var(--display-weight);font-variant-numeric:tabular-nums}
 
+/* Match stats sheet — a fixed-width middle column (not auto-per-row) so the home/away number
+   columns stay flush regardless of how long each row's label is. */
+.stat-sheet{padding:0 1.75rem 1.5rem}
+.stat-row{display:grid;grid-template-columns:1fr 11rem 1fr;align-items:center;gap:1rem;padding:.625rem 0;border-top:1px solid var(--line-hairline)}
+.stat-row:first-child{border-top:none}
+.stat-row__value{font-size:1.0625rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat-row__value--home{text-align:right}
+.stat-row__value--away{text-align:left}
+.stat-row__pill{display:inline-block;padding:.2rem .7rem;border-radius:var(--r-pill);background:rgba(var(--color-ink-rgb),.1);color:var(--white)}
+.stat-row__label{text-align:center;color:var(--muted-foreground);font-size:.85rem}
+
 /* =========================================================
    FIXTURES LIST
    ========================================================= */
@@ -317,6 +328,10 @@ ul{list-style:none;margin:0;padding:0}
 .standings{background:var(--bg-2)}
 .standings__grid{display:grid;grid-template-columns:1fr;gap:1.25rem}
 @media (min-width:1000px){.standings__grid{grid-template-columns:1.5fr 1fr;align-items:start}}
+
+/* Group A / Group B standings — always stacked, one full-width table after the other,
+   same as the single combined table used to be. */
+.group-tables{display:grid;grid-template-columns:1fr;gap:1.25rem}
 .competition-soon{padding:2rem 1.75rem 2.25rem;text-align:center}
 .competition-soon__eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-2);margin:0 0 .5rem}
 .competition-soon__text{margin:0;color:var(--muted-foreground);font-size:.95rem;line-height:1.5;max-width:22rem;margin-inline:auto}
@@ -334,6 +349,8 @@ ul{list-style:none;margin:0;padding:0}
 .ltable-pos{font-family:var(--font-headline);font-size:1.5rem;letter-spacing:var(--tracking-headline)}
 .ltable-pos--q{color:var(--green)}
 .ltable-pos--nq{color:var(--muted-2)}
+.ltable-pos--mid{color:var(--disputed)}
+.ltable-pos--out{opacity:.55}
 .ltable-move{display:flex;align-items:center;justify-content:center}
 .ltable-move svg{display:block}
 .ltable-crest{border-radius:var(--r-sm);flex:none}
@@ -346,6 +363,10 @@ ul{list-style:none;margin:0;padding:0}
 .ltable-divider{display:flex;align-items:center;gap:.875rem;padding:.5rem .75rem}
 .ltable-divider__line{flex:1;height:0;border-top:2px dashed rgba(var(--color-accent-rgb),.6)}
 .ltable-divider__label{font-size:.6875rem;font-weight:800;letter-spacing:.18em;color:var(--green);white-space:nowrap}
+.ltable-divider--qf .ltable-divider__line{border-top-style:solid;border-color:var(--green)}
+.ltable-divider--qf .ltable-divider__label{color:var(--green)}
+.ltable-divider--qual .ltable-divider__line{border-color:var(--disputed)}
+.ltable-divider--qual .ltable-divider__label{color:var(--disputed)}
 @media (max-width:640px){
   .ltable-header,.ltable-row{grid-template-columns:36px 20px 32px minmax(0,1fr) 44px 56px 64px}
   .ltable-stat--w,.ltable-stat--d,.ltable-stat--l,.ltable-stat--gf,.ltable-stat--ga,.ltable-head--w,.ltable-head--d,.ltable-head--l,.ltable-head--gf,.ltable-head--ga{display:none}
