@@ -27,6 +27,9 @@ export type TableRowData = Badge & {
   qualifies: boolean;
   isLeader: boolean;
   cutBefore: boolean;
+  /** Group-stage position colour tier (1-3/4-5/6-7). When set, TableRow uses this instead of
+   * the plain `qualifies` yellow/muted split. Unset for every existing (non-group) poster. */
+  posTier?: 'top' | 'mid' | 'out';
 };
 
 export type ChaserRow = Badge & {

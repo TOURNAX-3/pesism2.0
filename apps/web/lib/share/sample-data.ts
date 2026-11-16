@@ -104,6 +104,43 @@ const tableData14: Array<[TeamKey, string, number, number, number, string, numbe
 
 export const sampleTableRows14: TableRowData[] = buildTableRows(tableData14, 8);
 
+/** Group-stage sample rows: the same 14-player sample data, split into two groups of 7, each
+ * re-ranked 1-7 with the group position tiers (top 3 / mid 4-5 / out 6-7). */
+function buildGroupTableRows(
+  data: Array<[TeamKey, string, number, number, number, string, number, 'up' | 'down' | 'same']>,
+): TableRowData[] {
+  return data.map((d, i) => {
+    const pos = i + 1;
+    const [w, drawn] = [d[3], d[4]];
+    const played = d[2];
+    const lost = played - w - drawn;
+    return {
+      ...TEAMS[d[0]],
+      pos,
+      player: d[1],
+      played,
+      won: w,
+      drawn,
+      lost,
+      goalDiff: Number(d[5].replace('−', '-')),
+      points: d[6],
+      movement: null,
+      qualifies: pos <= 3,
+      isLeader: pos === 1,
+      cutBefore: false,
+      posTier: pos <= 3 ? 'top' : pos <= 5 ? 'mid' : 'out',
+    };
+  });
+}
+
+export const sampleGroupTableRowsA: TableRowData[] = buildGroupTableRows(tableData14.slice(0, 7));
+export const sampleGroupTableRowsB: TableRowData[] = buildGroupTableRows(tableData14.slice(7, 14));
+
+export const sampleQualifierTies: Tie[] = [
+  { label: 'QUALIFIER 1', home: side('bar', 'Nikhil'), away: side('int', 'Jouhar') },
+  { label: 'QUALIFIER 2', home: side('fcb', 'Vivek'), away: side('rma', 'Sameer') },
+];
+
 export const sampleQfTies: Tie[] = [
   { label: 'QF1', home: side('acm', 'Adhil'), away: side('ars', 'Imran') },
   { label: 'QF2', home: side('mun', 'Rahul'), away: side('int', 'Jouhar') },

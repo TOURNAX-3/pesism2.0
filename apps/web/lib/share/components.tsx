@@ -299,6 +299,24 @@ function SideRoleTag({ role, align }: { role: 'home' | 'away'; align: 'left' | '
   );
 }
 
+/** Qualifiers poster: "GROUP A · 4TH" above a team name, replacing the plain Home/Away tag. */
+function SideCustomTag({ text, align }: { text: string; align: 'left' | 'right' }) {
+  return (
+    <span
+      style={{
+        fontSize: 13,
+        fontWeight: 800,
+        letterSpacing: 2.08,
+        textTransform: 'uppercase',
+        color: DOWN,
+        alignSelf: align === 'right' ? 'flex-end' : 'flex-start',
+      }}
+    >
+      {text}
+    </span>
+  );
+}
+
 function SideBlock({
   side,
   align,
@@ -309,6 +327,7 @@ function SideBlock({
   textWidthPx,
   playerFontSize = 20,
   gap = 18,
+  tagText,
 }: {
   side: Fixture['home'];
   align: 'left' | 'right';
@@ -319,10 +338,12 @@ function SideBlock({
   textWidthPx: number;
   playerFontSize?: number;
   gap?: number;
+  /** Qualifiers poster: overrides the plain Home/Away tag with e.g. "GROUP A · 4TH". */
+  tagText?: string;
 }) {
   const info = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, alignItems: align === 'right' ? 'flex-end' : 'flex-start' }}>
-      <SideRoleTag role={role} align={align} />
+      {tagText ? <SideCustomTag text={tagText} align={align} /> : <SideRoleTag role={role} align={align} />}
       <FitTeamName text={side.teamName} maxWidthPx={textWidthPx} max={fitMax} min={fitMin} align={align} />
       <span style={{ fontSize: playerFontSize, fontWeight: 500, color: MUTED_2 }}>{side.playerName}</span>
     </div>
@@ -364,22 +385,27 @@ export function FixtureCard({
   cardWidthPx,
   vsSize = 72,
   vsColumnWidth = 96,
+  homeTag,
+  awayTag,
 }: {
   fixture: Fixture;
   cardWidthPx: number;
   vsSize?: number;
   vsColumnWidth?: number;
+  /** Qualifiers poster: per-side labels (e.g. "GROUP A · 4TH") replacing the plain Home/Away tag. */
+  homeTag?: string;
+  awayTag?: string;
 }) {
   const crestSize = 72;
   const gap = 18;
   const textWidthPx = (cardWidthPx - vsColumnWidth) / 2 - crestSize - gap;
   return (
     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-      <SideBlock side={fixture.home} align="left" role="home" crestSize={crestSize} gap={gap} textWidthPx={textWidthPx} fitMax={26} fitMin={18} />
+      <SideBlock side={fixture.home} align="left" role="home" crestSize={crestSize} gap={gap} textWidthPx={textWidthPx} fitMax={26} fitMin={18} tagText={homeTag} />
       <div style={{ display: 'flex', flexDirection: 'row', width: vsColumnWidth, flexShrink: 0, justifyContent: 'center' }}>
         <Chip text="VS" shape="circle" size={vsSize} fontSize={Math.round(vsSize * 0.36)} fontFamily="Furore" bg="#DED002" color="#1E0825" />
       </div>
-      <SideBlock side={fixture.away} align="right" role="away" crestSize={crestSize} gap={gap} textWidthPx={textWidthPx} fitMax={26} fitMin={18} />
+      <SideBlock side={fixture.away} align="right" role="away" crestSize={crestSize} gap={gap} textWidthPx={textWidthPx} fitMax={26} fitMin={18} tagText={awayTag} />
     </div>
   );
 }
@@ -432,7 +458,9 @@ const DENSE_PLAYER_RESERVE_PX = 150;
 
 export function TableRow({ row, dense = false, rowWidthPx }: { row: TableRowData; dense?: boolean; rowWidthPx: number }) {
   const posStr = String(row.pos).padStart(2, '0');
-  const posColor = row.qualifies ? YELLOW : MUTED;
+  // Group-stage tiers (top/mid/out) when set; otherwise the existing plain qualifies/doesn't split.
+  const posColor = row.posTier ? (row.posTier === 'top' ? YELLOW : row.posTier === 'mid' ? DOWN : MUTED) : row.qualifies ? YELLOW : MUTED;
+  const rowOpacity = row.posTier ? (row.posTier === 'out' ? 0.55 : 1) : row.qualifies ? 1 : 0.6;
   const ptsColor = row.isLeader ? YELLOW : INK;
   const crestSize = dense ? 30 : 40;
   const crestHeight = dense ? 35 : 46;
@@ -458,7 +486,7 @@ export function TableRow({ row, dense = false, rowWidthPx }: { row: TableRowData
         padding: cols.pad,
         borderRadius: cols.radius,
         width: '100%',
-        opacity: row.qualifies ? 1 : 0.6,
+        opacity: rowOpacity,
         ...(row.isLeader
           ? { background: 'rgba(222,208,2,0.1)', boxShadow: 'inset 0 0 0 1px rgba(222,208,2,0.35)' }
           : {}),
@@ -529,12 +557,25 @@ export function TableHeaderRow({ dense = false }: { dense?: boolean }) {
   );
 }
 
-export function CutLine({ label = 'QUARTER-FINAL LINE', small = false }: { label?: string; small?: boolean }) {
+export function CutLine({
+  label = 'QUARTER-FINAL LINE',
+  small = false,
+  solid = false,
+  color = YELLOW,
+}: {
+  label?: string;
+  small?: boolean;
+  /** Group-stage quarter-finals line is solid instead of the default dashed style. */
+  solid?: boolean;
+  /** Group-stage qualifiers line is pink instead of the default yellow. */
+  color?: string;
+}) {
+  const borderTop = `2px ${solid ? 'solid' : 'dashed'} ${color}`;
   return (
     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 14, padding: small ? '2px 8px' : '4px 8px' }}>
-      <div style={{ display: 'flex', flex: 1, height: 0, borderTop: `2px dashed ${YELLOW}` }} />
-      <span style={{ fontSize: small ? 12 : 13, fontWeight: 800, letterSpacing: 3, color: YELLOW }}>{label}</span>
-      <div style={{ display: 'flex', flex: 1, height: 0, borderTop: `2px dashed ${YELLOW}` }} />
+      <div style={{ display: 'flex', flex: 1, height: 0, borderTop }} />
+      <span style={{ fontSize: small ? 12 : 13, fontWeight: 800, letterSpacing: 3, color }}>{label}</span>
+      <div style={{ display: 'flex', flex: 1, height: 0, borderTop }} />
     </div>
   );
 }

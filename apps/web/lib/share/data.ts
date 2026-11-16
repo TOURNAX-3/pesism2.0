@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import {
   computeStandings,
+  rankGroup,
   topScorers,
   positionsAfterMatchday,
   cleanSheetCount,
@@ -9,8 +10,9 @@ import {
   biggestHaul,
   type Match,
   type PlayerId,
+  type StandingRow,
 } from '@tournax/core';
-import { fetchSeasonCompetition, type SeasonPlayer, type KnockoutMatch } from '@/lib/season-competition';
+import { fetchSeasonCompetition, type SeasonCompetition, type SeasonPlayer, type KnockoutMatch } from '@/lib/season-competition';
 import { isCountedMatch } from '@/lib/matchday-status';
 import { initialsFor } from '@/lib/crest';
 import { formatMatchdayDeadline } from '@/lib/format-deadline';
@@ -188,6 +190,90 @@ export async function getMatchdayTableData(matchday: number, useSample: boolean)
   });
 
   return { matchday, rows };
+}
+
+// ---------------------------------------------------------------------------
+// Group-stage tables (Group A / Group B)
+// ---------------------------------------------------------------------------
+
+export type GroupTablesData = { matchday: number; groupA: TableRowData[]; groupB: TableRowData[] };
+
+/** A group's standing rows, each player's stats aggregated from ALL of their matches (including
+ * cross-group ones), but only that group's players listed, ranked with the group tie-break order. */
+function groupRows(letter: 'A' | 'B', comp: SeasonCompetition, allRows: StandingRow[]): StandingRow[] {
+  const ids = new Set(comp.players.filter((p) => p.groupLetter === letter).map((p) => p.id));
+  return rankGroup(allRows.filter((r) => ids.has(r.playerId)), comp.matches, comp.points);
+}
+
+function toGroupTableRows(ranked: StandingRow[], players: Map<PlayerId, SeasonPlayer>): TableRowData[] {
+  return ranked.map((row, i) => {
+    const pos = i + 1;
+    const player = players.get(row.playerId);
+    return {
+      ...(player ? badgeFor(player) : { teamName: 'Team pending' }),
+      pos,
+      player: player?.name ?? '—',
+      played: row.played,
+      won: row.won,
+      drawn: row.drawn,
+      lost: row.lost,
+      goalDiff: row.goalDiff,
+      points: row.points,
+      movement: null,
+      qualifies: pos <= 3,
+      isLeader: pos === 1,
+      cutBefore: false,
+      posTier: pos <= 3 ? 'top' : pos <= 5 ? 'mid' : 'out',
+    };
+  });
+}
+
+export async function getGroupTablesData(matchday: number, useSample: boolean): Promise<GroupTablesData | null> {
+  if (useSample) {
+    return { matchday, groupA: sample.sampleGroupTableRowsA, groupB: sample.sampleGroupTableRowsB };
+  }
+  const comp = await loadCompetition();
+  if (!comp) return null;
+
+  const mdMatches = comp.matches.filter((m) => m.matchday === matchday);
+  if (!mdMatches.length || !mdMatches.every(isCountedMatch)) return null;
+
+  const allRows = computeStandings(comp.players.map((p) => p.id), comp.matches, comp.points);
+  const players = playerMap(comp.players);
+
+  return {
+    matchday,
+    groupA: toGroupTableRows(groupRows('A', comp, allRows), players),
+    groupB: toGroupTableRows(groupRows('B', comp, allRows), players),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Qualifiers (Group A/B 4th & 5th play-off)
+// ---------------------------------------------------------------------------
+
+export async function getQualifiersData(useSample: boolean): Promise<KnockoutPreviewData | null> {
+  if (useSample) return { ties: sample.sampleQualifierTies, deadline: 'Matchday 10 · Two places left. Win or go home' };
+  const comp = await loadCompetition();
+  if (!comp) return null;
+
+  const allRows = computeStandings(comp.players.map((p) => p.id), comp.matches, comp.points);
+  const players = playerMap(comp.players);
+  const a = groupRows('A', comp, allRows);
+  const b = groupRows('B', comp, allRows);
+  if (a.length < 5 || b.length < 5) return null;
+
+  const a4 = players.get(a[3].playerId);
+  const a5 = players.get(a[4].playerId);
+  const b4 = players.get(b[3].playerId);
+  const b5 = players.get(b[4].playerId);
+  if (!a4 || !a5 || !b4 || !b5) return null;
+
+  const ties: Tie[] = [
+    { label: 'QUALIFIER 1', home: sideFor(a4), away: sideFor(b5) },
+    { label: 'QUALIFIER 2', home: sideFor(b4), away: sideFor(a5) },
+  ];
+  return { ties, deadline: 'Matchday 10 · Two places left. Win or go home' };
 }
 
 // ---------------------------------------------------------------------------

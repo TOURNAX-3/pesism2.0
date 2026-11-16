@@ -3,7 +3,9 @@ import { isCountedMatch } from '@/lib/matchday-status';
 import {
   getMatchdayPreviewData,
   getMatchdayTableData,
+  getGroupTablesData,
   getQuarterFinalsData,
+  getQualifiersData,
   getSemiFinalsData,
   getFinalPreviewData,
   getBracketData,
@@ -54,6 +56,16 @@ export async function listPosters(): Promise<PosterListing[]> {
   });
   if (mdTable) out[out.length - 1].path = withVersion(out[out.length - 1].path, mdTable);
 
+  const groupTables = await getGroupTablesData(tableMd, false);
+  out.push({
+    id: 'matchday-table-groups',
+    title: `Group tables after matchday ${tableMd}`,
+    path: `/api/share/matchday/${tableMd}/table/groups`,
+    caption: `The tables after Matchday ${String(tableMd).padStart(2, '0')}. Group A & Group B. tournax.auradev.in/table`,
+    available: groupTables !== null,
+  });
+  if (groupTables) out[out.length - 1].path = withVersion(out[out.length - 1].path, groupTables);
+
   const qf = await getQuarterFinalsData(false);
   out.push({
     id: 'qf-preview',
@@ -63,6 +75,16 @@ export async function listPosters(): Promise<PosterListing[]> {
     available: qf !== null,
   });
   if (qf) out[out.length - 1].path = withVersion(out[out.length - 1].path, qf);
+
+  const qualifiers = await getQualifiersData(false);
+  out.push({
+    id: 'qualifiers-preview',
+    title: 'Qualifiers preview',
+    path: '/api/share/knockout/qualifiers',
+    caption: `Two places left. Win or go home. tournax.auradev.in`,
+    available: qualifiers !== null,
+  });
+  if (qualifiers) out[out.length - 1].path = withVersion(out[out.length - 1].path, qualifiers);
 
   const sf = await getSemiFinalsData(false);
   out.push({
