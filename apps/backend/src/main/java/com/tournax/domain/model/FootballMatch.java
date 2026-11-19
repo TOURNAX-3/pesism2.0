@@ -52,6 +52,12 @@ public class FootballMatch {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 
+    @Column(name = "highlight_video_url_1")
+    private String highlightVideoUrl1;
+
+    @Column(name = "highlight_video_url_2")
+    private String highlightVideoUrl2;
+
     protected FootballMatch() {}
 
     public FootballMatch(
@@ -174,5 +180,21 @@ public class FootballMatch {
 
     public void setAwayGoals(int awayGoals) {
         this.awayGoals = awayGoals;
+    }
+
+    public String getHighlightVideoUrl1() {
+        return highlightVideoUrl1;
+    }
+
+    public String getHighlightVideoUrl2() {
+        return highlightVideoUrl2;
+    }
+
+    public void setHighlightVideoUrl1(String highlightVideoUrl1) {
+        this.highlightVideoUrl1 = highlightVideoUrl1;
+    }
+
+    public void setHighlightVideoUrl2(String highlightVideoUrl2) {
+        this.highlightVideoUrl2 = highlightVideoUrl2;
     }
 }

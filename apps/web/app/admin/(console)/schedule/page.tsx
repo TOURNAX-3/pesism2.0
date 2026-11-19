@@ -27,8 +27,8 @@ const COLUMNS: ResponsiveListColumn<AdminMatchRow>[] = [
     key: 'actions',
     header: '',
     cell: (f) => (
-      <Link href={f.status !== 'scheduled' ? `/admin/fixtures/${f.id}` : '/admin/fixtures'} className="text-sm font-semibold text-(--color-accent)! hover:underline">
-        {f.status !== 'scheduled' ? 'Edit' : 'Enter result'}
+      <Link href={`/admin/fixtures/${f.id}`} className="text-sm font-semibold text-(--color-accent)! hover:underline">
+        Edit match
       </Link>
     ),
   },
@@ -96,8 +96,8 @@ export default async function AdminSchedulePage() {
                   </p>
                 </CardContent>
                 <div className="flex items-center rounded-b-(--r-xl) border-t border-(--line-hairline) bg-(--color-paper)/35 p-(--card-spacing)">
-                  <Link href={f.status !== 'scheduled' ? `/admin/fixtures/${f.id}` : '/admin/fixtures'} className="text-sm font-semibold text-(--color-accent)! hover:underline">
-                    {f.status !== 'scheduled' ? 'Edit' : 'Enter result'}
+                  <Link href={`/admin/fixtures/${f.id}`} className="text-sm font-semibold text-(--color-accent)! hover:underline">
+                    Edit match
                   </Link>
                 </div>
               </Card>

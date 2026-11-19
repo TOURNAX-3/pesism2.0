@@ -1,15 +1,6 @@
+import { SITE_NAV_LINKS } from '@/lib/site-nav';
 import { UseIcon } from './icon';
 import { Button } from './ui/button';
-
-const NAV_LINKS = [
-  { href: '/#top', label: 'Home' },
-  { href: '/#matchday', label: 'Matchday' },
-  { href: '/#format', label: 'Format' },
-  { href: '/#standings', label: 'Table' },
-  { href: '/fixtures', label: 'Fixtures' },
-  { href: '/rules', label: 'Rules' },
-  { href: '/#players', label: 'Players' },
-];
 
 export function Header() {
   return (
@@ -24,7 +15,7 @@ export function Header() {
         </a>
         <nav className="nav" aria-label="Primary">
           <ul>
-            {NAV_LINKS.map(link => (
+            {SITE_NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <a href={link.href}>{link.label}</a>
               </li>

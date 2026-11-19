@@ -43,15 +43,27 @@ tasks.bootJar {
     archiveFileName.set("app.jar")
 }
 
-tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+fun loadDotEnvInto(mutableEnv: MutableMap<String, String>) {
     val envFile = file(".env")
-    if (envFile.exists()) {
-        envFile.readLines()
-            .map { it.trim() }
-            .filter { it.isNotEmpty() && !it.startsWith("#") && "=" in it }
-            .forEach { line ->
-                val idx = line.indexOf('=')
-                environment(line.substring(0, idx).trim(), line.substring(idx + 1).trim())
-            }
-    }
+    if (!envFile.exists()) return
+    envFile.readLines()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() && !it.startsWith("#") && "=" in it }
+        .forEach { line ->
+            val idx = line.indexOf('=')
+            mutableEnv[line.substring(0, idx).trim()] = line.substring(idx + 1).trim()
+        }
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    loadDotEnvInto(environment as MutableMap<String, String>)
+}
+
+tasks.register<JavaExec>("flywayRepair") {
+    group = "flyway"
+    description = "Align flyway_schema_history checksums with local migration files (dev only)"
+    dependsOn("classes")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.tournax.dev.FlywayRepairMain")
+    loadDotEnvInto(environment as MutableMap<String, String>)
 }

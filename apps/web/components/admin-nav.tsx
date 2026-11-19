@@ -13,6 +13,7 @@ import {
   Trophy,
   MessageSquareWarning,
   Share2,
+  Handshake,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -29,6 +30,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: '/admin/teams', label: 'Teams', icon: Shield },
       { href: '/admin/registration-audit', label: 'Reg audit', icon: ScrollText },
       { href: '/admin/share', label: 'Share images', icon: Share2 },
+      { href: '/admin/sponsors', label: 'Sponsors', icon: Handshake },
     ],
   },
   {

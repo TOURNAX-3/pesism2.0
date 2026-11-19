@@ -40,10 +40,35 @@ test('standings: points, goal difference and ignored statuses', () => {
     m('3', 3, 'c', 'a', 0, 1),
     m('4', 4, 'a', 'c', 9, 0, 'pending_confirmation'), // must not count
   ]);
-  assert.deepEqual(table.map(r => r.playerId), ['a', 'c', 'b']);
+  assert.deepEqual(table.map(r => r.playerId), ['a', 'b', 'c']);
   assert.equal(table[0]!.points, 6);
   assert.equal(table[0]!.goalDiff, 3);
   assert.deepEqual(table[0]!.form, ['W', 'W']);
+});
+
+test('standings: goals scored ranks above goal difference', () => {
+  const table = computeStandings(['a', 'b', 'c'], [
+    m('1', 1, 'a', 'c', 6, 5),
+    m('2', 2, 'b', 'c', 2, 0),
+    m('3', 3, 'a', 'b', 1, 1),
+  ]);
+  const a = table.find((r) => r.playerId === 'a')!;
+  const b = table.find((r) => r.playerId === 'b')!;
+  assert.equal(a.points, b.points);
+  assert.ok(a.goalsFor > b.goalsFor);
+  assert.ok(a.goalDiff < b.goalDiff);
+  assert.ok(table.findIndex((r) => r.playerId === 'a') < table.findIndex((r) => r.playerId === 'b'));
+});
+
+test('standings: fewer goals conceded after goals scored', () => {
+  const table = computeStandings(['a', 'b', 'c'], [
+    m('1', 1, 'a', 'c', 3, 1),
+    m('2', 2, 'b', 'c', 3, 2),
+    m('3', 3, 'a', 'b', 0, 0),
+  ]);
+  assert.equal(table[0]!.playerId, 'a');
+  assert.equal(table[0]!.goalsFor, 3);
+  assert.equal(table[0]!.goalsAgainst, 1);
 });
 
 test('standings: head to head breaks a full tie', () => {

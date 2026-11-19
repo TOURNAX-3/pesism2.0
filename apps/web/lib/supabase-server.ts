@@ -3,7 +3,10 @@ import sharp from 'sharp';
 
 const BUCKET = 'player-avatars';
 const CREST_BUCKET = 'crests';
+const HIGHLIGHT_BUCKET = 'match-highlights';
 const MAX_BYTES = 2 * 1024 * 1024;
+const HIGHLIGHT_MAX_BYTES = 100 * 1024 * 1024;
+const HIGHLIGHT_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const CREST_SIDE = 256;
 
@@ -134,6 +137,50 @@ export async function uploadTeamCrest(file: File | Blob, playerId: string, previ
   }
 
   const { data } = supabase.storage.from(CREST_BUCKET).getPublicUrl(path);
+  return data.publicUrl;
+}
+
+function resolveVideoType(file: File): string {
+  if (file.type && HIGHLIGHT_TYPES.has(file.type)) {
+    return file.type;
+  }
+  const name = file.name.toLowerCase();
+  if (name.endsWith('.webm')) return 'video/webm';
+  if (name.endsWith('.mov')) return 'video/quicktime';
+  if (name.endsWith('.mp4')) return 'video/mp4';
+  return file.type;
+}
+
+/** Uploads a short match highlight clip; returns the public HTTPS URL for the player on `/highlights`. */
+export async function uploadMatchHighlight(file: File, matchId: string): Promise<string> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) {
+    throw new Error('Highlight upload is not configured (Supabase keys missing).');
+  }
+  if (file.size > HIGHLIGHT_MAX_BYTES) {
+    throw new Error('Highlight clip must be 100 MB or smaller.');
+  }
+  const contentType = resolveVideoType(file);
+  if (!HIGHLIGHT_TYPES.has(contentType)) {
+    throw new Error('Use an MP4, WebM, or MOV file.');
+  }
+  await ensureBucket(supabase, HIGHLIGHT_BUCKET);
+
+  const ext = contentType === 'video/webm' ? 'webm' : contentType === 'video/quicktime' ? 'mov' : 'mp4';
+  const path = `season-3/${matchId}/${crypto.randomUUID()}.${ext}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const { error } = await supabase.storage.from(HIGHLIGHT_BUCKET).upload(path, buffer, {
+    contentType,
+    upsert: false,
+  });
+  if (error) {
+    throw new Error(
+      error.message.includes('Bucket not found')
+        ? `Create the "${HIGHLIGHT_BUCKET}" bucket in Supabase Storage (public).`
+        : error.message,
+    );
+  }
+  const { data } = supabase.storage.from(HIGHLIGHT_BUCKET).getPublicUrl(path);
   return data.publicUrl;
 }
 

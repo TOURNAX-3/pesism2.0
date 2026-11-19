@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { AdminApiStatus } from '@/components/admin-api-status';
 import { AdminEditMatchForm } from '@/components/admin-edit-match-form';
+import { AdminMatchHighlights } from '@/components/admin-match-highlights';
 import { AdminPageHead } from '@/components/admin-page-head';
 import { getAdminMatch } from '@/lib/tournax-api';
 import { Card, CardContent } from '@/components/ui/card';
@@ -31,11 +32,19 @@ export default async function AdminEditMatchPage({ params }: { params: Promise<{
       {error || !match ? (
         <AdminApiStatus error={error ?? 'Match not found'} />
       ) : (
-        <Card>
-          <CardContent>
-            <AdminEditMatchForm match={match} />
-          </CardContent>
-        </Card>
+        <>
+          <Card>
+            <CardContent>
+              <AdminEditMatchForm match={match} />
+            </CardContent>
+          </Card>
+          <Card className="mt-4">
+            <CardContent>
+              <h2 className="text-base font-semibold mb-3">Match highlights</h2>
+              <AdminMatchHighlights match={match} />
+            </CardContent>
+          </Card>
+        </>
       )}
     </>
   );

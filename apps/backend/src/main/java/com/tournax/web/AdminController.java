@@ -1,6 +1,7 @@
 package com.tournax.web;
 
 import com.tournax.application.AdminService;
+import com.tournax.application.SponsorService;
 import com.tournax.application.RegistrationAuditService;
 import com.tournax.application.dto.RegistrationAuditRow;
 import com.tournax.application.FairPlayAdminService;
@@ -18,8 +19,13 @@ import com.tournax.application.dto.GenerateFixturesResponse;
 import com.tournax.application.dto.RecordMatchRequest;
 import com.tournax.application.dto.ScheduleFixtureRequest;
 import com.tournax.application.dto.UpdateAvatarRequest;
+import com.tournax.application.dto.UpdatePlayerSkillTagRequest;
+import com.tournax.application.dto.UpdateMatchHighlightsRequest;
 import com.tournax.application.dto.UpdateMatchRequest;
 import com.tournax.application.dto.AdminDashboardResponse;
+import com.tournax.application.dto.CreateSponsorRequest;
+import com.tournax.application.dto.SponsorDto;
+import com.tournax.application.dto.UpdateSponsorRequest;
 import com.tournax.application.dto.AdminRegistrationRow;
 import com.tournax.application.dto.RegistrationWindowPatchRequest;
 import jakarta.validation.Valid;
@@ -46,6 +52,7 @@ public class AdminController {
     private final FairPlayAdminService fairPlayAdminService;
     private final GrievanceService grievanceService;
     private final RegistrationAuditService registrationAuditService;
+    private final SponsorService sponsorService;
 
     public AdminController(
         AdminService adminService,
@@ -53,7 +60,8 @@ public class AdminController {
         FixtureAdminService fixtureAdminService,
         FairPlayAdminService fairPlayAdminService,
         GrievanceService grievanceService,
-        RegistrationAuditService registrationAuditService
+        RegistrationAuditService registrationAuditService,
+        SponsorService sponsorService
     ) {
         this.adminService = adminService;
         this.matchAdminService = matchAdminService;
@@ -61,6 +69,7 @@ public class AdminController {
         this.fairPlayAdminService = fairPlayAdminService;
         this.grievanceService = grievanceService;
         this.registrationAuditService = registrationAuditService;
+        this.sponsorService = sponsorService;
     }
 
     @GetMapping("/dashboard")
@@ -86,6 +95,16 @@ public class AdminController {
         @RequestBody UpdateAvatarRequest body
     ) {
         adminService.updatePlayerAvatar(season, playerId, body.avatarUrl());
+    }
+
+    @PatchMapping("/registrations/{playerId}/skill-tag")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateSkillTag(
+        @PathVariable int season,
+        @PathVariable UUID playerId,
+        @RequestBody UpdatePlayerSkillTagRequest body
+    ) {
+        adminService.updatePlayerSkillTag(season, playerId, body.skillTag());
     }
 
     @PostMapping("/registrations/{playerId}/approve")
@@ -190,9 +209,53 @@ public class AdminController {
         return matchAdminService.updateMatch(season, matchId, body);
     }
 
+    @PostMapping("/match-results/{matchId}/video-clips")
+    public AdminMatchDetailDto updateMatchHighlights(
+        @PathVariable int season,
+        @PathVariable UUID matchId,
+        @RequestBody UpdateMatchHighlightsRequest body
+    ) {
+        return matchAdminService.updateMatchHighlights(season, matchId, body);
+    }
+
     @DeleteMapping("/match-results/{matchId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMatchResult(@PathVariable int season, @PathVariable UUID matchId) {
         matchAdminService.deleteMatch(season, matchId);
+    }
+
+    @GetMapping("/sponsors")
+    public List<SponsorDto> listSponsors(@PathVariable int season) {
+        return sponsorService.listAdmin(season);
+    }
+
+    @PostMapping("/sponsors")
+    public SponsorDto createSponsor(@PathVariable int season, @RequestBody CreateSponsorRequest body) {
+        return sponsorService.create(season, body);
+    }
+
+    @PatchMapping("/sponsors/{sponsorId}")
+    public SponsorDto updateSponsor(
+        @PathVariable int season,
+        @PathVariable UUID sponsorId,
+        @RequestBody UpdateSponsorRequest body
+    ) {
+        return sponsorService.update(season, sponsorId, body);
+    }
+
+    @PostMapping("/sponsors/{sponsorId}/banner")
+    public SponsorDto setSponsorBanner(
+        @PathVariable int season,
+        @PathVariable UUID sponsorId,
+        @RequestBody java.util.Map<String, Boolean> body
+    ) {
+        boolean active = Boolean.TRUE.equals(body.get("active"));
+        return sponsorService.setBanner(season, sponsorId, active);
+    }
+
+    @DeleteMapping("/sponsors/{sponsorId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSponsor(@PathVariable int season, @PathVariable UUID sponsorId) {
+        sponsorService.delete(season, sponsorId);
     }
 }

@@ -36,6 +36,12 @@ Built as a Spring Boot API (`apps/backend`) over Supabase Postgres via Flyway mi
 - [ ] `bot_outbox` sender
 - [ ] Deploy to an always on host
 
+## Phase 5: Community extras (planned)
+- [x] Match highlights hub (`/highlights`) linked from home — admin sets up to two video URLs per match (Admin → Fixtures → edit match)
+- [x] Player profile tags (Legend / Professional / Superstar / Beginner) — admin-set, branded badge on home carousel, `/players/[id]`
+- [ ] Match predictions — WhatsApp number must match a registered player; one pick per match per number
+- [x] Sponsors page + home ticker banner — Admin → Sponsors, one home ticker at a time (`/sponsors`)
+
 ## Phase 4: Knockouts and extras
 - [x] Knockout bracket *view* (quarter-finals → semi-finals → final) on the home page, built from
       whichever knockout-stage matches exist — admin creates them manually via the stage picker on

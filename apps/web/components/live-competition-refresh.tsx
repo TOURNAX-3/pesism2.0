@@ -9,6 +9,8 @@ function shouldPauseRefresh() {
   if (typeof document === 'undefined') return true;
   if (document.visibilityState !== 'visible') return true;
   if (document.querySelector('.modal.is-open')) return true;
+  // Long forms (sponsors, uploads) lose focus / feel “unclickable” if the tree refreshes every 10s.
+  if (window.location.pathname.startsWith('/admin/sponsors')) return true;
   const el = document.activeElement;
   if (
     el &&

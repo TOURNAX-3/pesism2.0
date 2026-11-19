@@ -11,11 +11,20 @@ import {
   setTournamentStatus,
   startMatchday,
   updateAdminMatch,
+  updateAdminMatchHighlights,
   updateGrievanceStatus,
   updatePlayerAvatar,
+  updatePlayerSkillTag,
   updateTeam,
+  createSponsor,
+  updateSponsor,
+  setSponsorBanner,
+  deleteSponsor,
+  type CreateSponsorBody,
+  type UpdateSponsorBody,
   type GrievanceStatus,
   type RecordMatchBody,
+  type UpdateMatchHighlightsBody,
   type ScheduleFixtureBody,
   type TournamentStatusValue,
   type UpdateMatchBody,
@@ -63,6 +72,14 @@ export async function uploadPlayerAvatarAction(playerId: string, formData: FormD
   const avatarUrl = await uploadPlayerAvatar(photo);
   await updatePlayerAvatar(playerId, avatarUrl);
   revalidatePath('/admin/players');
+  revalidatePath('/');
+  revalidatePath('/table');
+}
+
+export async function updatePlayerSkillTagAction(playerId: string, skillTag: string | null) {
+  await updatePlayerSkillTag(playerId, skillTag);
+  revalidatePath('/admin/players');
+  revalidatePath(`/players/${playerId}`);
   revalidatePath('/');
   revalidatePath('/table');
 }
@@ -148,3 +165,41 @@ export async function updateMatchAction(matchId: string, body: UpdateMatchBody) 
   revalidatePath('/');
   return detail;
 }
+
+export async function updateMatchHighlightsAction(matchId: string, body: UpdateMatchHighlightsBody) {
+  const detail = await updateAdminMatchHighlights(matchId, body);
+  revalidatePath(`/admin/fixtures/${matchId}`);
+  revalidatePath('/highlights');
+  revalidatePath('/');
+  return detail;
+}
+
+function revalidateSponsorPaths() {
+  revalidatePath('/admin/sponsors');
+  revalidatePath('/sponsors');
+  revalidatePath('/');
+}
+
+export async function createSponsorAction(body: CreateSponsorBody) {
+  const row = await createSponsor(body);
+  revalidateSponsorPaths();
+  return row;
+}
+
+export async function updateSponsorAction(sponsorId: string, body: UpdateSponsorBody) {
+  const row = await updateSponsor(sponsorId, body);
+  revalidateSponsorPaths();
+  return row;
+}
+
+export async function setSponsorBannerAction(sponsorId: string, active: boolean) {
+  const row = await setSponsorBanner(sponsorId, active);
+  revalidateSponsorPaths();
+  return row;
+}
+
+export async function deleteSponsorAction(sponsorId: string) {
+  await deleteSponsor(sponsorId);
+  revalidateSponsorPaths();
+}
+
