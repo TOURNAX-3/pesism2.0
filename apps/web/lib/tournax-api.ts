@@ -29,6 +29,7 @@ export type AdminRegistration = {
   emailVerifiedAt: string | null;
   approved: boolean;
   joinedAt: string;
+  skillTag: string | null;
 };
 
 async function adminFetch<T>(path: string, init?: RequestInit): Promise<T> {
@@ -239,6 +240,13 @@ export type AdminMatchDetail = {
   status: string;
   updatedAt: string;
   stats: MatchStatsInput | null;
+  highlightVideoUrl1: string | null;
+  highlightVideoUrl2: string | null;
+};
+
+export type UpdateMatchHighlightsBody = {
+  highlightVideoUrl1: string | null;
+  highlightVideoUrl2: string | null;
 };
 
 export type UpdateMatchBody = {
@@ -258,10 +266,31 @@ export function updateAdminMatch(matchId: string, body: UpdateMatchBody, season 
   });
 }
 
+export function updateAdminMatchHighlights(
+  matchId: string,
+  body: UpdateMatchHighlightsBody,
+  season = CURRENT_SEASON,
+) {
+  return adminFetch<AdminMatchDetail>(
+    `/api/v1/admin/seasons/${season}/match-results/${matchId}/video-clips`,
+    {
+      method: 'POST',
+      body: JSON.stringify(body),
+    },
+  );
+}
+
 export function updatePlayerAvatar(playerId: string, avatarUrl: string, season = CURRENT_SEASON) {
   return adminFetch<void>(`/api/v1/admin/seasons/${season}/registrations/${playerId}/avatar`, {
     method: 'PATCH',
     body: JSON.stringify({ avatarUrl }),
+  });
+}
+
+export function updatePlayerSkillTag(playerId: string, skillTag: string | null, season = CURRENT_SEASON) {
+  return adminFetch<void>(`/api/v1/admin/seasons/${season}/registrations/${playerId}/skill-tag`, {
+    method: 'PATCH',
+    body: JSON.stringify({ skillTag }),
   });
 }
 
@@ -382,5 +411,81 @@ export type CloseMatchdayResult = { matchday: number; disputedCount: number };
 export function closeCurrentMatchday(season = CURRENT_SEASON) {
   return adminFetch<CloseMatchdayResult>(`/api/v1/admin/seasons/${season}/season-control/matchdays/current/close`, {
     method: 'POST',
+  });
+}
+
+export type SponsorRow = {
+  id: string;
+  name: string;
+  tagline: string | null;
+  description: string | null;
+  productUrl: string | null;
+  logoUrl: string | null;
+  instagramUrl: string | null;
+  telegramUrl: string | null;
+  productImageUrls: string[];
+  bannerActive: boolean;
+};
+
+export type CreateSponsorBody = {
+  name: string;
+  tagline?: string | null;
+  description?: string | null;
+  productUrl?: string | null;
+  logoUrl?: string | null;
+  instagramUrl?: string | null;
+  telegramUrl?: string | null;
+  productImageUrls?: string[];
+  bannerActive?: boolean;
+};
+
+export type UpdateSponsorBody = {
+  name: string;
+  tagline?: string | null;
+  description?: string | null;
+  productUrl?: string | null;
+  logoUrl?: string | null;
+  instagramUrl?: string | null;
+  telegramUrl?: string | null;
+  productImageUrls?: string[];
+};
+
+export function listAdminSponsors(season = CURRENT_SEASON) {
+  return adminFetch<SponsorRow[]>(`/api/v1/admin/seasons/${season}/sponsors`);
+}
+
+export async function getAdminSponsor(sponsorId: string, season = CURRENT_SEASON): Promise<SponsorRow> {
+  const rows = await listAdminSponsors(season);
+  const row = rows.find((s) => s.id === sponsorId);
+  if (!row) {
+    throw new Error('Sponsor not found — refresh the page and try again.');
+  }
+  return row;
+}
+
+export function createSponsor(body: CreateSponsorBody, season = CURRENT_SEASON) {
+  return adminFetch<SponsorRow>(`/api/v1/admin/seasons/${season}/sponsors`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export function updateSponsor(sponsorId: string, body: UpdateSponsorBody, season = CURRENT_SEASON) {
+  return adminFetch<SponsorRow>(`/api/v1/admin/seasons/${season}/sponsors/${sponsorId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  });
+}
+
+export function setSponsorBanner(sponsorId: string, active: boolean, season = CURRENT_SEASON) {
+  return adminFetch<SponsorRow>(`/api/v1/admin/seasons/${season}/sponsors/${sponsorId}/banner`, {
+    method: 'POST',
+    body: JSON.stringify({ active }),
+  });
+}
+
+export function deleteSponsor(sponsorId: string, season = CURRENT_SEASON) {
+  return adminFetch<void>(`/api/v1/admin/seasons/${season}/sponsors/${sponsorId}`, {
+    method: 'DELETE',
   });
 }

@@ -47,6 +47,23 @@ export function latestPlayedMatchday(matches: Match[]): number | null {
   return played.length ? Math.max(...played) : null;
 }
 
+/** Highest matchday where every fixture that round is confirmed/resolved/forfeit — for table share posters. */
+export function latestCompletedMatchday(matches: Match[]): number | null {
+  const byMd = new Map<number, Match[]>();
+  for (const m of matches) {
+    const list = byMd.get(m.matchday) ?? [];
+    list.push(m);
+    byMd.set(m.matchday, list);
+  }
+  let best: number | null = null;
+  for (const [md, ms] of byMd) {
+    if (ms.length > 0 && ms.every(isCountedMatch)) {
+      best = best == null ? md : Math.max(best, md);
+    }
+  }
+  return best;
+}
+
 export type Movement = 'up' | 'down' | 'same';
 
 /**

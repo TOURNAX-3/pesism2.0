@@ -6,6 +6,7 @@ import com.tournax.application.dto.AdminMatchDetailDto;
 import com.tournax.application.dto.AdminMatchRow;
 import com.tournax.application.dto.MatchStatsInput;
 import com.tournax.application.dto.RecordMatchRequest;
+import com.tournax.application.dto.UpdateMatchHighlightsRequest;
 import com.tournax.application.dto.UpdateMatchRequest;
 import com.tournax.domain.model.AuditLogEntry;
 import com.tournax.domain.model.FootballMatch;
@@ -103,8 +104,36 @@ public class MatchAdminService {
             match.getAwayGoals() != null ? match.getAwayGoals() : 0,
             match.getStatus(),
             match.getUpdatedAt(),
-            MatchStatsMapper.toInput(stats)
+            MatchStatsMapper.toInput(stats),
+            match.getHighlightVideoUrl1(),
+            match.getHighlightVideoUrl2()
         );
+    }
+
+    @Transactional
+    public AdminMatchDetailDto updateMatchHighlights(int season, UUID matchId, UpdateMatchHighlightsRequest body) {
+        Tournament tournament = requireSeason(season);
+        FootballMatch match =
+            footballMatchRepository
+                .findById(matchId)
+                .filter(m -> m.getTournamentId().equals(tournament.getId()))
+                .orElseThrow(() -> new IllegalArgumentException("Match not found"));
+
+        String url1 = HighlightUrlNormalizer.normalize(body.highlightVideoUrl1());
+        String url2 = HighlightUrlNormalizer.normalize(body.highlightVideoUrl2());
+
+        var before = new java.util.HashMap<String, Object>();
+        before.put("highlightVideoUrl1", match.getHighlightVideoUrl1());
+        before.put("highlightVideoUrl2", match.getHighlightVideoUrl2());
+        match.setHighlightVideoUrl1(url1);
+        match.setHighlightVideoUrl2(url2);
+        match.touchUpdatedAt(clock.instant());
+        footballMatchRepository.save(match);
+        var after = new java.util.HashMap<String, Object>();
+        after.put("highlightVideoUrl1", url1);
+        after.put("highlightVideoUrl2", url2);
+        writeAudit("admin_update_match_highlights", matchId, before, after);
+        return getMatch(season, matchId);
     }
 
     @Transactional

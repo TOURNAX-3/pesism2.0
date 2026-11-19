@@ -4,6 +4,7 @@ import com.tournax.application.dto.CompetitionMatchDto;
 import com.tournax.application.dto.CompetitionPlayerDto;
 import com.tournax.application.dto.CompetitionResponse;
 import com.tournax.application.dto.MatchDetailResponse;
+import com.tournax.application.dto.MatchHighlightDto;
 import com.tournax.application.dto.MatchSideDto;
 import com.tournax.domain.model.FootballMatch;
 import com.tournax.domain.model.Matchday;
@@ -18,9 +19,14 @@ import com.tournax.domain.repository.MatchdayRepository;
 import com.tournax.domain.repository.PlayerRepository;
 import com.tournax.domain.repository.TournamentPlayerRepository;
 import com.tournax.domain.repository.TournamentRepository;
+import com.tournax.domain.model.MatchStage;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +69,8 @@ public class CompetitionService {
                     tp.getPlayer().getAvatarUrl(),
                     tp.getTeamName(),
                     tp.getCrestUrl(),
-                    tp.getGroupLetter()
+                    tp.getGroupLetter(),
+                    tp.getPlayer().getSkillTag()
                 ))
                 .toList();
 
@@ -107,6 +114,46 @@ public class CompetitionService {
             match.getHomeGoals(),
             match.getAwayGoals(),
             match.getStatus()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<MatchHighlightDto> listMatchHighlights(int season) {
+        Tournament tournament = requireSeason(season);
+        List<FootballMatch> matches = footballMatchRepository.findAllWithHighlightsByTournamentId(tournament.getId());
+        Map<UUID, Player> playersById =
+            playerRepository
+                .findAllById(
+                    matches.stream()
+                        .flatMap(m -> java.util.stream.Stream.of(m.getHomeId(), m.getAwayId()))
+                        .distinct()
+                        .toList())
+                .stream()
+                .collect(Collectors.toMap(Player::getId, Function.identity()));
+
+        return matches.stream().map(m -> toHighlightDto(m, playersById)).filter(dto -> !dto.videoUrls().isEmpty()).toList();
+    }
+
+    private MatchHighlightDto toHighlightDto(FootballMatch match, Map<UUID, Player> playersById) {
+        int matchday = match.getMatchday() != null ? match.getMatchday().getNumber() : 0;
+        Player home = playersById.get(match.getHomeId());
+        Player away = playersById.get(match.getAwayId());
+        List<String> urls = new ArrayList<>(2);
+        if (match.getHighlightVideoUrl1() != null && !match.getHighlightVideoUrl1().isBlank()) {
+            urls.add(match.getHighlightVideoUrl1().trim());
+        }
+        if (match.getHighlightVideoUrl2() != null && !match.getHighlightVideoUrl2().isBlank()) {
+            urls.add(match.getHighlightVideoUrl2().trim());
+        }
+        return new MatchHighlightDto(
+            match.getId(),
+            matchday,
+            match.getStage() != null ? match.getStage() : MatchStage.league,
+            home != null ? home.getName() : "Home",
+            away != null ? away.getName() : "Away",
+            match.getHomeGoals(),
+            match.getAwayGoals(),
+            List.copyOf(urls)
         );
     }
 

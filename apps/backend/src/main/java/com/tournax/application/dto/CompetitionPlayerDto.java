@@ -10,5 +10,6 @@ public record CompetitionPlayerDto(
     String avatarUrl,
     String teamName,
     String crestUrl,
-    String groupLetter
+    String groupLetter,
+    String skillTag
 ) {}

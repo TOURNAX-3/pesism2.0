@@ -1,6 +1,6 @@
 {
   "_comment": "Copy host from Supabase Dashboard → Connect → Session pooler (do not guess aws-0/aws-1). DATABASE_USER must be postgres.<ref>, never plain postgres, or pooler returns ENOIDENTIFIER.",
-  "DATABASE_URL": "jdbc:postgresql://PASTE_SESSION_POOLER_HOST:5432/postgres?sslmode=require&prepareThreshold=0&options=reference%3Dxjnovjmixytuxopzzrhd",
+  "DATABASE_URL": "jdbc:postgresql://PASTE_SESSION_POOLER_HOST_FROM_CONNECT_DIALOG:5432/postgres?sslmode=require&prepareThreshold=0",
   "DATABASE_USER": "postgres.xjnovjmixytuxopzzrhd",
   "DATABASE_PASSWORD": "REPLACE_WITH_SUPABASE_DATABASE_PASSWORD",
   "ADMIN_API_KEY": "REPLACE_WITH_SAME_VALUE_AS_VERCEL_ADMIN_API_KEY",

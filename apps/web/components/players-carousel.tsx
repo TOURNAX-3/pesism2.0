@@ -8,6 +8,7 @@ import { fallbackPaletteFor } from '@/lib/crest';
 import { SplitHeading } from './split-heading';
 import { UseIcon } from './icon';
 import { TeamCrest } from './team-crest';
+import { PlayerSkillTagBadge } from './player-skill-tag';
 
 function hexWithAlpha(hex: string, alphaHex: string): string {
   return `${hex}${alphaHex}`;
@@ -82,10 +83,14 @@ export async function PlayersCarousel() {
                           <UseIcon id="i-pin" />
                           {player.city ?? 'India'}
                         </span>
+                        <PlayerSkillTagBadge tag={player.skillTag} placement="media" size="sm" />
                       </div>
                       <div className="player__body">
                         <div>
-                          <h3 className="player__name">{player.name}</h3>
+                          <div className="player__name-row">
+                            <h3 className="player__name">{player.name}</h3>
+                            <PlayerSkillTagBadge tag={player.skillTag} placement="inline" size="sm" className="player-skill-tag--carousel-inline" />
+                          </div>
                           <p className="player__tag">@{player.gamingUsername}</p>
                           <p className="player__tag" style={{ display: 'flex', alignItems: 'center', gap: '.4rem', color: 'var(--muted-foreground)' }}>
                             <TeamCrest teamName={player.teamName} crestUrl={player.crestUrl} size={18} />

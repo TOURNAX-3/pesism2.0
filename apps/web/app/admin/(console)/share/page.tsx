@@ -1,5 +1,6 @@
 import { AdminPageHead } from '@/components/admin-page-head';
 import { ShareImageActions } from '@/components/share-image-actions';
+import { SharePosterThumb } from '@/components/share-poster-thumb';
 import { FIXTURE_HOME_AWAY_NOTE } from '@/lib/fixture-sides';
 import { listPosters } from '@/lib/share/registry';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,8 +22,7 @@ export default async function AdminSharePage() {
           <Card key={poster.id} className="overflow-hidden">
             <div className="flex aspect-[4/5] items-center justify-center overflow-hidden bg-(--color-paper-3)">
               {poster.available ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={poster.path} alt="" className="h-full w-full object-cover" style={{ transform: 'scale(0.98)' }} />
+                <SharePosterThumb src={poster.path} alt={poster.title} />
               ) : (
                 <span className="px-6 text-center text-sm text-muted-foreground">Not available yet</span>
               )}

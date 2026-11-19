@@ -1,17 +1,9 @@
 import type { CSSProperties } from 'react';
+import { SITE_NAV_LINKS } from '@/lib/site-nav';
 import { UseIcon } from './icon';
 import { Button } from './ui/button';
 
-const LINKS = [
-  { href: '/#top', label: 'Home' },
-  { href: '/#matchday', label: 'Matchday' },
-  { href: '/#format', label: 'Format' },
-  { href: '/#standings', label: 'Table' },
-  { href: '/fixtures', label: 'Fixtures' },
-  { href: '/rules', label: 'Rules' },
-  { href: '/#players', label: 'Players' },
-  { href: '/#contact', label: 'Contact' },
-];
+const LINKS = [...SITE_NAV_LINKS, { href: '/#contact', label: 'Contact' }];
 
 export function FullscreenMenu() {
   return (

@@ -1,6 +1,8 @@
 package com.tournax.domain.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,6 +41,9 @@ public class Player {
 
     @Column(name = "email_verified_at")
     private Instant emailVerifiedAt;
+
+    @Column(name = "skill_tag")
+    private String skillTag;
 
     @Column(name = "is_admin", nullable = false)
     private boolean admin;
@@ -133,5 +138,19 @@ public class Player {
 
     public void markEmailVerified(Instant at) {
         this.emailVerifiedAt = at;
+    }
+
+    public String getSkillTag() {
+        return skillTag;
+    }
+
+    public void setSkillTag(String skillTag) {
+        this.skillTag = PlayerSkillTag.normalizeOrNull(skillTag);
+    }
+
+    @PrePersist
+    @PreUpdate
+    void normalizeSkillTagBeforeSave() {
+        this.skillTag = PlayerSkillTag.normalizeOrNull(this.skillTag);
     }
 }

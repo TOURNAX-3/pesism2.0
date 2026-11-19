@@ -52,4 +52,15 @@ public interface FootballMatchRepository extends JpaRepository<FootballMatch, UU
         MatchStage stage,
         MatchStatus status
     );
+
+    @Query(
+        """
+        select m from FootballMatch m
+        join fetch m.matchday md
+        where m.tournamentId = :tournamentId
+          and (m.highlightVideoUrl1 is not null or m.highlightVideoUrl2 is not null)
+        order by md.number desc, m.updatedAt desc
+        """
+    )
+    List<FootballMatch> findAllWithHighlightsByTournamentId(UUID tournamentId);
 }

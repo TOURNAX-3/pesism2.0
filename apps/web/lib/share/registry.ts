@@ -1,5 +1,5 @@
 import { fetchSeasonCompetition } from '@/lib/season-competition';
-import { isCountedMatch } from '@/lib/matchday-status';
+import { latestCompletedMatchday } from '@/lib/matchday-status';
 import {
   getMatchdayPreviewData,
   getMatchdayTableData,
@@ -44,27 +44,31 @@ export async function listPosters(): Promise<PosterListing[]> {
   });
   if (mdPreview) out[out.length - 1].path = withVersion(out[out.length - 1].path, mdPreview);
 
-  const lastPlayedMd = comp?.matches.filter(isCountedMatch).reduce((max, m) => Math.max(max, m.matchday), 0) ?? 0;
-  const tableMd = lastPlayedMd || previewMd;
-  const mdTable = await getMatchdayTableData(tableMd, false);
+  const tableMd = comp ? latestCompletedMatchday(comp.matches) : null;
+  const mdTable = tableMd != null ? await getMatchdayTableData(tableMd, false) : null;
   out.push({
     id: 'matchday-table',
-    title: `Table after matchday ${tableMd}`,
-    path: `/api/share/matchday/${tableMd}/table`,
-    caption: `Table after Matchday ${String(tableMd).padStart(2, '0')}. Numbers don't do banter. tournax.auradev.in/table`,
+    title: tableMd != null ? `Table after matchday ${tableMd}` : 'Table after matchday',
+    path: tableMd != null ? `/api/share/matchday/${tableMd}/table` : '#',
+    caption: tableMd != null
+      ? `Table after Matchday ${String(tableMd).padStart(2, '0')}. Numbers don't do banter. tournax.auradev.in/table`
+      : `Table poster unlocks when a full matchday is complete. tournax.auradev.in/table`,
     available: mdTable !== null,
   });
-  if (mdTable) out[out.length - 1].path = withVersion(out[out.length - 1].path, mdTable);
+  if (mdTable && tableMd != null) out[out.length - 1].path = withVersion(out[out.length - 1].path, mdTable);
 
-  const groupTables = await getGroupTablesData(tableMd, false);
+  const groupTables = tableMd != null ? await getGroupTablesData(tableMd, false) : null;
   out.push({
     id: 'matchday-table-groups',
-    title: `Group tables after matchday ${tableMd}`,
-    path: `/api/share/matchday/${tableMd}/table/groups`,
-    caption: `The tables after Matchday ${String(tableMd).padStart(2, '0')}. Group A & Group B. tournax.auradev.in/table`,
+    title: tableMd != null ? `Group tables after matchday ${tableMd}` : 'Group tables',
+    path: tableMd != null ? `/api/share/matchday/${tableMd}/table/groups` : '#',
+    caption:
+      tableMd != null
+        ? `The tables after Matchday ${String(tableMd).padStart(2, '0')}. Group A & Group B. tournax.auradev.in/table`
+        : `Group table posters unlock when a full matchday is complete.`,
     available: groupTables !== null,
   });
-  if (groupTables) out[out.length - 1].path = withVersion(out[out.length - 1].path, groupTables);
+  if (groupTables && tableMd != null) out[out.length - 1].path = withVersion(out[out.length - 1].path, groupTables);
 
   const qf = await getQuarterFinalsData(false);
   out.push({

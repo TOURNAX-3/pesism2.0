@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { computeStandings } from '@tournax/core';
 import { avatarSvg } from '@/lib/avatar';
 import { fetchSeasonCompetition } from '@/lib/season-competition';
+import { PlayerSkillTagBadge } from '@/components/player-skill-tag';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,7 +49,12 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
             </div>
           </div>
           <div>
-            <h1 className="h2">{player.name}</h1>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.75rem' }}>
+              <h1 className="h2" style={{ margin: 0 }}>
+                {player.name}
+              </h1>
+              <PlayerSkillTagBadge tag={player.skillTag} size="lg" />
+            </div>
             <p className="lead" style={{ marginTop: '0.75rem' }}>
               {rank >= 0 ? (
                 <>

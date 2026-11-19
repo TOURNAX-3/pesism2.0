@@ -6,8 +6,9 @@ export const DEFAULT_POINTS: PointsRule = { win: 3, draw: 1, loss: 0 };
 
 /**
  * League table from matches. Only confirmed, resolved and forfeit matches count.
- * Tiebreakers, in order: points, goal difference, goals scored,
- * head to head points between the tied players, then player id for a stable order.
+ * Tiebreakers (Season 3 rules), in order: points, goals scored, goals conceded (fewer better),
+ * head-to-head points, head-to-head goal difference, matches played (more ranks above), then
+ * player id for a stable order. Goal difference is shown but not used as a tiebreaker step.
  * The table is always derived, never stored, so it cannot drift out of sync.
  */
 export function computeStandings(
@@ -35,9 +36,11 @@ export function computeStandings(
   const table = [...rows.values()];
   table.sort((a, b) =>
     b.points - a.points ||
-    b.goalDiff - a.goalDiff ||
     b.goalsFor - a.goalsFor ||
+    a.goalsAgainst - b.goalsAgainst ||
     headToHead(b.playerId, a.playerId, counted, points) ||
+    headToHeadGoalDiff(b.playerId, a.playerId, counted) ||
+    b.played - a.played ||
     a.playerId.localeCompare(b.playerId),
   );
   return table;
@@ -54,7 +57,6 @@ function apply(row: StandingRow, scored: number, conceded: number, points: Point
   if (row.form.length > 5) row.form.shift();
 }
 
-/** Positive when `a` took more points than `b` in their direct matches. */
 function headToHead(a: PlayerId, b: PlayerId, matches: Match[], points: PointsRule): number {
   let pa = 0, pb = 0;
   for (const m of matches) {

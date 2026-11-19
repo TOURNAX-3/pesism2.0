@@ -16,7 +16,8 @@ public record AdminRegistrationRow(
     boolean emailVerified,
     Instant emailVerifiedAt,
     boolean approved,
-    Instant joinedAt
+    Instant joinedAt,
+    String skillTag
 ) {
     public static AdminRegistrationRow from(TournamentPlayer entry) {
         var player = entry.getPlayer();
@@ -32,7 +33,8 @@ public record AdminRegistrationRow(
             player.isEmailVerified(),
             player.getEmailVerifiedAt(),
             entry.isApproved(),
-            entry.getJoinedAt()
+            entry.getJoinedAt(),
+            player.getSkillTag()
         );
     }
 }

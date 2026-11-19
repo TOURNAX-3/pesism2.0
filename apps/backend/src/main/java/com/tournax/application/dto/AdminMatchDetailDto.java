@@ -15,5 +15,7 @@ public record AdminMatchDetailDto(
     int awayGoals,
     MatchStatus status,
     Instant updatedAt,
-    MatchStatsInput stats
+    MatchStatsInput stats,
+    String highlightVideoUrl1,
+    String highlightVideoUrl2
 ) {}

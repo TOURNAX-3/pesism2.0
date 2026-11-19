@@ -1,5 +1,6 @@
 import { listRegistrations, type AdminRegistration } from '@/lib/tournax-api';
 import { AdminPlayerActions } from '@/components/admin-player-actions';
+import { AdminPlayerSkillTag } from '@/components/admin-player-skill-tag';
 import { AdminPlayerAvatar } from '@/components/admin-player-avatar';
 import { AdminApiStatus } from '@/components/admin-api-status';
 import { AdminPageHead } from '@/components/admin-page-head';
@@ -17,6 +18,11 @@ const COLUMNS: ResponsiveListColumn<AdminRegistration>[] = [
   { key: 'city', header: 'City', cell: (row) => row.city },
   { key: 'email', header: 'Email', cell: (row) => row.email },
   { key: 'phone', header: 'Phone', cell: (row) => <span className="tabular-nums">{row.waNumber}</span> },
+  {
+    key: 'tag',
+    header: 'Tag',
+    cell: (row) => <AdminPlayerSkillTag playerId={row.playerId} skillTag={row.skillTag ?? null} />,
+  },
   {
     key: 'verified',
     header: 'Email verified',
@@ -71,6 +77,7 @@ export default async function AdminPlayersPage() {
                 <Badge variant={row.emailVerified ? 'default' : 'secondary'} className="w-fit">
                   {row.emailVerified ? 'Email verified' : 'Email unverified'}
                 </Badge>
+                <AdminPlayerSkillTag playerId={row.playerId} skillTag={row.skillTag ?? null} />
               </CardContent>
               <CardFooter>
                 <AdminPlayerActions playerId={row.playerId} approved={row.approved} name={row.name} />

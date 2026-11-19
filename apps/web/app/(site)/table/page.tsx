@@ -5,8 +5,8 @@ import { CompetitionComingSoon } from '@/components/competition-coming-soon';
 import { LeagueTable } from '@/components/league-table';
 import { TopScorers } from '@/components/top-scorers';
 import { ShareImageActions } from '@/components/share-image-actions';
-import { latestPlayedMatchday } from '@/lib/matchday-status';
-import { getMatchdayTableData, posterVersion } from '@/lib/share/data';
+import { latestCompletedMatchday } from '@/lib/matchday-status';
+import { getGroupTablesData, getMatchdayTableData, posterVersion } from '@/lib/share/data';
 
 export const metadata: Metadata = { title: 'Standings · TOURNAX Season 3' };
 
@@ -32,8 +32,9 @@ export default async function TablePage({
   const tab = view === 'overall' ? 'overall' : 'groups';
 
   const competition = await fetchSeasonCompetition();
-  const lastMd = competition ? latestPlayedMatchday(competition.matches) : null;
-  const tableData = lastMd ? await getMatchdayTableData(lastMd, false) : null;
+  const shareMd = competition ? latestCompletedMatchday(competition.matches) : null;
+  const tableData = shareMd ? await getMatchdayTableData(shareMd, false) : null;
+  const groupTablesData = shareMd ? await getGroupTablesData(shareMd, false) : null;
 
   const live = competition?.hasResults === true;
   const playerNames = competition?.playerNames ?? {};
@@ -60,13 +61,22 @@ export default async function TablePage({
           <p className="lead">
             Points, goals scored, goals conceded, then head to head (in that order). Only confirmed, resolved and forfeit matches count.
           </p>
-          {tableData ? (
-            <ShareImageActions
-              imageUrl={`/api/share/matchday/${lastMd}/table?v=${posterVersion(tableData)}`}
-              caption={`Table after Matchday ${String(lastMd).padStart(2, '0')}. Numbers don't do banter. tournax.auradev.in/table`}
-              filename={`matchday-${lastMd}-table.png`}
-            />
-          ) : null}
+          <div className="share-actions-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+            {tab === 'overall' && tableData && shareMd ? (
+              <ShareImageActions
+                imageUrl={`/api/share/matchday/${shareMd}/table?v=${posterVersion(tableData)}`}
+                caption={`Table after Matchday ${String(shareMd).padStart(2, '0')}. Numbers don't do banter. tournax.auradev.in/table`}
+                filename={`matchday-${shareMd}-table.png`}
+              />
+            ) : null}
+            {tab === 'groups' && groupTablesData && shareMd ? (
+              <ShareImageActions
+                imageUrl={`/api/share/matchday/${shareMd}/table/groups?v=${posterVersion(groupTablesData)}`}
+                caption={`The tables after Matchday ${String(shareMd).padStart(2, '0')}. Group A & Group B. tournax.auradev.in/table`}
+                filename={`matchday-${shareMd}-groups.png`}
+              />
+            ) : null}
+          </div>
         </div>
 
         <nav className="matchday-tabs" aria-label="Standings view">

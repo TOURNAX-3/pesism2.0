@@ -31,7 +31,7 @@ const COLUMNS: ResponsiveListColumn<AdminMatchRow>[] = [
     header: '',
     cell: (m) => (
       <Link href={`/admin/fixtures/${m.id}`} className="text-sm font-semibold text-(--color-accent)! hover:underline">
-        View / edit
+        Edit match
       </Link>
     ),
   },

@@ -138,6 +138,17 @@ public class AdminService {
     }
 
     @Transactional
+    public void updatePlayerSkillTag(int season, UUID playerId, String skillTag) {
+        Tournament tournament = requireSeason(season);
+        tournamentPlayerRepository
+            .findById(new TournamentPlayerId(tournament.getId(), playerId))
+            .orElseThrow(() -> new IllegalArgumentException("Registration not found"));
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> new IllegalArgumentException("Player not found"));
+        player.setSkillTag(skillTag);
+        playerRepository.save(player);
+    }
+
+    @Transactional
     public AdminDashboardResponse openRegistration(int season) {
         Tournament tournament = requireSeason(season);
         Instant now = clock.instant();
